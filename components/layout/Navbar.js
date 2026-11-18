@@ -1,47 +1,43 @@
-// PLACEHOLDER: replaced in phase A04 with the real designed Navbar.
-// Simple bar: FixMate wordmark + three links + Sign In link.
+// Public Navbar — sticky, "Steady Signal" system.
+// Logged-out: Sign In (ghost) + Sign Up (primary). Logged-in: UserMenu
+// dropdown. Below 768px: MobileNav hamburger panel. This file stays a server
+// component; interactivity lives in NavLinks/UserMenu/MobileNav.
 
-import Link from "next/link";
-import { Wrench } from "lucide-react";
+import Button from "@/components/ui/Button";
 import Container from "@/components/ui/Container";
+import Logo from "./Logo";
+import NavLinks from "./NavLinks";
+import UserMenu from "./UserMenu";
+import MobileNav from "./MobileNav";
 
-const LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
-];
-
-export default function Navbar() {
+export default function Navbar({ user = null }) {
   return (
-    <header className="border-b border-border bg-surface">
-      <Container className="flex h-16 items-center justify-between gap-4">
-        <Link
-          href="/"
-          className="flex h-11 items-center gap-2 rounded-field font-heading text-lg font-bold text-ink"
-        >
-          <span className="flex size-8 items-center justify-center rounded-field bg-primary">
-            <Wrench className="size-4 text-white" aria-hidden="true" />
-          </span>
-          FixMate
-        </Link>
+    <header className="sticky top-0 z-40 border-b border-border bg-surface">
+      <Container className="relative flex h-16 items-center justify-between gap-4">
+        <div className="flex items-center gap-6">
+          <Logo href="/" />
+          <div className="hidden md:block">
+            <NavLinks />
+          </div>
+        </div>
 
-        <nav aria-label="Main navigation" className="flex items-center gap-1 sm:gap-2">
-          {LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="inline-flex h-11 items-center rounded-field px-2 text-sm font-medium text-muted transition-colors hover:text-foreground sm:px-3"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <Link
-            href="/sign-in"
-            className="inline-flex h-11 items-center rounded-field px-2 text-sm font-semibold text-primary transition-colors hover:text-primary-hover sm:px-3"
-          >
-            Sign In
-          </Link>
-        </nav>
+        <div className="flex items-center gap-2 sm:gap-3">
+          {user ? (
+            <div className="hidden md:block">
+              <UserMenu user={user} />
+            </div>
+          ) : (
+            <div className="hidden items-center gap-2 md:flex">
+              <Button variant="ghost" href="/sign-in">
+                Sign In
+              </Button>
+              <Button variant="primary" href="/sign-up">
+                Sign Up
+              </Button>
+            </div>
+          )}
+          <MobileNav user={user} />
+        </div>
       </Container>
     </header>
   );
