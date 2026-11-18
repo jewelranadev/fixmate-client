@@ -14,6 +14,8 @@ import Avatar from "@/components/ui/Avatar";
 import Badge from "@/components/ui/Badge";
 import StatusBadge from "@/components/shared/StatusBadge";
 import PaymentBadge from "@/components/shared/PaymentBadge";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export const metadata = {
   title: "Design Preview",
@@ -315,6 +317,36 @@ export default function DesignPreviewPage() {
               <span className="text-sm text-muted">{shadow}</span>
             </div>
           ))}
+        </div>
+      </Section>
+
+      <Section
+        title="Navbar variants (A04 preview)"
+        description="Logged-out plus three logged-in roles. Dropdowns and the mobile panel (below 768px) are interactive here too."
+      >
+        <div className="space-y-10">
+          {[
+            ["Logged out", null],
+            ["Logged in — customer", { name: "Amina Yusuf", email: "amina@example.com", role: "customer" }],
+            ["Logged in — technician", { name: "David Chen", email: "david.chen@example.com", role: "technician" }],
+            ["Logged in — admin", { name: "Sara Lin", email: "sara.lin@fixmate.app", role: "admin" }],
+          ].map(([caption, mockUser]) => (
+            <div key={caption} className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+                {caption}
+              </p>
+              {/* [&>header]:static neutralizes the sticky bar for preview */}
+              <div className="relative rounded-card border border-border [&>header]:static">
+                <Navbar user={mockUser} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Footer (A04)" description="Navy footer — fake contact details and placeholder social links by design.">
+        <div className="rounded-card border border-border">
+          <Footer />
         </div>
       </Section>
     </Container>
