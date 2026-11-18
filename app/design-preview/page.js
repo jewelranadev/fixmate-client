@@ -26,7 +26,33 @@ import BookingsSection from "@/components/dashboard/customer/BookingsSection";
 import PaymentsSection from "@/components/dashboard/customer/PaymentsSection";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import ErrorState from "@/components/ui/ErrorState";
+import ApprovalBadge from "@/components/shared/ApprovalBadge";
+import Switch from "@/components/ui/Switch";
+import FileInput from "@/components/ui/FileInput";
+import Modal from "@/components/ui/Modal";
+import Alert from "@/components/ui/Alert";
+import AddServiceSection from "@/components/dashboard/technician/AddServiceSection";
+import MyServicesSection from "@/components/dashboard/technician/MyServicesSection";
+import RequestsSection from "@/components/dashboard/technician/RequestsSection";
+import ServiceFields from "@/components/dashboard/technician/ServiceFields";
+import { technician } from "@/data/mock/technicianServices";
 import { ServiceCardSkeleton } from "@/components/shared/ServiceCard";
+
+// Sample service used only by the A09 edit-modal preview.
+const PREVIEW_SERVICE = {
+  _id: "svc_preview",
+  title: "Split AC Deep Cleaning",
+  category: "AC",
+  description:
+    "Indoor and outdoor units washed, filters and coils cleaned, and drainage checked so cooling runs at full strength.",
+  image: "/images/ac-outdoor-unit.jpg",
+  basePrice: 55,
+  estimatedDuration: "2-3 hours",
+  serviceMode: "Home Visit",
+  serviceArea: "Mirpur, Dhaka",
+  approvalStatus: "approved",
+  isAvailable: true,
+};
 
 export const metadata = {
   title: "Design Preview",
@@ -664,6 +690,129 @@ export default function DesignPreviewPage() {
                   </Button>
                 }
               />
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        title="Technician dashboard states (A09 preview)"
+        description="Approval badges, availability switches, the file picker, empty service/request lists, add-service error/success/submitting states and the edit modal — all presentation only."
+      >
+        <div className="space-y-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Approval badges · switch states · file input
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <ApprovalBadge status="pending" />
+              <ApprovalBadge status="approved" />
+              <ApprovalBadge status="rejected" />
+            </div>
+            <div className="mt-5 flex flex-wrap gap-8">
+              <Switch
+                id="preview-switch-on"
+                label="Available"
+                ariaLabel="Availability preview (on)"
+                defaultChecked
+              />
+              <Switch
+                id="preview-switch-off"
+                label="Available"
+                ariaLabel="Availability preview (off)"
+              />
+            </div>
+            <div className="mt-5 max-w-md">
+              <FileInput id="preview-file" />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Empty my services
+            </p>
+            <div className="mt-2">
+              <MyServicesSection services={[]} technician={technician} />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Empty requests
+            </p>
+            <div className="mt-2">
+              <RequestsSection requests={[]} idPrefix="preview-empty" />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              List loading and error states
+            </p>
+            <div className="mt-2 space-y-6">
+              <MyServicesSection
+                services={[]}
+                technician={technician}
+                loading
+              />
+              <MyServicesSection services={[]} technician={technician} error />
+              <RequestsSection requests={[]} loading idPrefix="preview-loading" />
+              <RequestsSection requests={[]} error idPrefix="preview-error" />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Add service — error, success and submitting
+            </p>
+            <div className="mt-2 space-y-6">
+              <AddServiceSection
+                technician={technician}
+                status="error"
+                errors={{
+                  title: "Enter a service title.",
+                  category: "Choose a category.",
+                  basePrice: "Enter a starting price.",
+                }}
+                message="Check the highlighted fields and try again."
+              />
+              <AddServiceSection technician={technician} status="success" />
+              <AddServiceSection technician={technician} isSubmitting />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Edit service modal — click the trigger
+            </p>
+            <div className="mt-2">
+              <Modal
+                title="Edit service"
+                description="Update the listing details. The image is replaced only when you choose a new file."
+                confirmLabel="Save changes"
+                size="lg"
+                trigger={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="border border-border-strong"
+                  >
+                    Edit service
+                  </Button>
+                }
+              >
+                <div className="space-y-5">
+                  <Alert
+                    variant="warning"
+                    title="Saving changes sends this service back to pending review."
+                  />
+                  <ServiceFields
+                    idPrefix="preview-edit-svc_preview"
+                    service={PREVIEW_SERVICE}
+                    technician={technician}
+                  />
+                </div>
+              </Modal>
             </div>
           </div>
         </div>
