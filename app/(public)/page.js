@@ -1,15 +1,29 @@
-// Moved from app/page.js in phase A03 (git mv).
-// Placeholder — the full landing page is designed and built in phase A05.
+// FixMate home page — composed entirely of static server sections.
+// All data comes from data/mock/*; nothing here fetches, filters or mutates
+// beyond the display-only sort/limit inside FeaturedServices.
 
-import Container from "@/components/ui/Container";
+import FeaturedServices from "@/components/home/FeaturedServices";
+import Hero from "@/components/home/Hero";
+import HowItWorks from "@/components/home/HowItWorks";
+import PopularCategories from "@/components/home/PopularCategories";
+import Testimonials from "@/components/home/Testimonials";
+import WhyChooseUs from "@/components/home/WhyChooseUs";
 
-export default function Home() {
+export const metadata = {
+  title: "Book expert device & appliance repair",
+  description:
+    "Book verified technicians for smartphone, laptop, AC, refrigerator, TV, washing machine and electrical repairs. Upfront starting prices, trackable status and payment only after the repair.",
+};
+
+export default function HomePage() {
   return (
-    <Container className="flex-1 py-16 text-center">
-      <h1>FixMate home (A05)</h1>
-      <p className="mt-3 text-muted">
-        Placeholder — the landing page is built in phase A05.
-      </p>
-    </Container>
+    <>
+      <Hero />
+      <FeaturedServices />
+      <HowItWorks />
+      <PopularCategories />
+      <WhyChooseUs />
+      <Testimonials />
+    </>
   );
 }
