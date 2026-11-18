@@ -17,6 +17,7 @@ import PaymentBadge from "@/components/shared/PaymentBadge";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ServicesGrid from "@/components/services/ServicesGrid";
+import RequestRepairPanel from "@/components/services/RequestRepairPanel";
 import { ServiceCardSkeleton } from "@/components/shared/ServiceCard";
 
 export const metadata = {
@@ -374,6 +375,64 @@ export default function DesignPreviewPage() {
               ))}
             </div>
           </div>
+        </div>
+      </Section>
+
+      <Section
+        title="Request repair states (A07 preview)"
+        description="Guest, customer (clean, errors, duplicate, success) and the technician/admin notices - props only, no session or validation logic."
+      >
+        <div className="grid gap-6 lg:grid-cols-2">
+          {[
+            {
+              caption: "Guest - default on /services/svc_001",
+              props: { variant: "guest" },
+            },
+            {
+              caption: "Customer - clean form",
+              props: { variant: "customer" },
+            },
+            {
+              caption: "Customer - all four field errors",
+              props: {
+                variant: "customer",
+                errors: {
+                  phone: "Phone number is required",
+                  address: "Address is required",
+                  preferredDate: "Choose today or a future date",
+                  problemDescription:
+                    "Describe the problem in at least 20 characters",
+                },
+              },
+            },
+            {
+              caption: "Customer - duplicate request",
+              props: { variant: "customer", status: "duplicate" },
+            },
+            {
+              caption: "Customer - success",
+              props: { variant: "customer", status: "success" },
+            },
+            {
+              caption: "Technician account",
+              props: { variant: "technician" },
+            },
+            {
+              caption: "Admin account",
+              props: { variant: "admin" },
+            },
+          ].map(({ caption, props }) => (
+            <div key={caption} className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+                {caption}
+              </p>
+              <RequestRepairPanel
+                serviceId="svc_001"
+                serviceTitle="iPhone Screen Replacement"
+                {...props}
+              />
+            </div>
+          ))}
         </div>
       </Section>
     </Container>
