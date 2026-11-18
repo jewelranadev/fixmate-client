@@ -18,6 +18,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ServicesGrid from "@/components/services/ServicesGrid";
 import RequestRepairPanel from "@/components/services/RequestRepairPanel";
+import SignUpForm from "@/components/auth/SignUpForm";
+import SignInForm from "@/components/auth/SignInForm";
 import { ServiceCardSkeleton } from "@/components/shared/ServiceCard";
 
 export const metadata = {
@@ -433,6 +435,110 @@ export default function DesignPreviewPage() {
               />
             </div>
           ))}
+        </div>
+      </Section>
+
+      <Section
+        title="Auth states (A08 preview)"
+        description="Sign-up and sign-in in default, error, success and submitting states — props only, no validation or auth logic. The decorative image panel is omitted here."
+      >
+        <div className="space-y-10">
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.08em] text-muted">
+              Sign-up
+            </h3>
+            <div className="mt-3 grid gap-6 lg:grid-cols-2">
+              {[
+                { caption: "Default (idle)", props: {} },
+                {
+                  caption: "All fields with errors",
+                  props: {
+                    errors: {
+                      name: "Full name is required",
+                      email: "Enter a valid email address",
+                      password: "Password must be at least 6 characters",
+                      role: "Choose an account type",
+                    },
+                  },
+                },
+                {
+                  caption: "Top alert - error",
+                  props: {
+                    status: "error",
+                    message: "An account with this email already exists",
+                  },
+                },
+                {
+                  caption: "Top alert - success",
+                  props: {
+                    status: "success",
+                    message:
+                      "Account created. Redirecting to your dashboard...",
+                  },
+                },
+                {
+                  caption: "Submitting / loading",
+                  props: { isSubmitting: true },
+                },
+              ].map(({ caption, props }) => (
+                <div key={caption} className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+                    {caption}
+                  </p>
+                  <Card className="p-5 sm:p-6">
+                    <SignUpForm {...props} />
+                  </Card>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.08em] text-muted">
+              Sign-in
+            </h3>
+            <div className="mt-3 grid gap-6 lg:grid-cols-2">
+              {[
+                { caption: "Default (idle)", props: {} },
+                {
+                  caption: "All fields with errors",
+                  props: {
+                    errors: {
+                      email: "Enter a valid email address",
+                      password: "Password must be at least 6 characters",
+                    },
+                  },
+                },
+                {
+                  caption: "Top alert - error",
+                  props: {
+                    status: "error",
+                    message: "Invalid email or password",
+                  },
+                },
+                {
+                  caption: "Top alert - success",
+                  props: {
+                    status: "success",
+                    message: "Signed in. Redirecting to your dashboard...",
+                  },
+                },
+                {
+                  caption: "Submitting / loading",
+                  props: { isSubmitting: true },
+                },
+              ].map(({ caption, props }) => (
+                <div key={caption} className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+                    {caption}
+                  </p>
+                  <Card className="p-5 sm:p-6">
+                    <SignInForm {...props} />
+                  </Card>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </Section>
     </Container>
