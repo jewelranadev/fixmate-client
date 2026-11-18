@@ -3,7 +3,7 @@
 // Sign Out item). Pure rendering — state lives in DashboardShell.
 
 import Link from "next/link";
-import { LogOut, Menu } from "lucide-react";
+import { House, LogOut, Menu } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import Badge from "@/components/ui/Badge";
 import { ROLE_LABELS } from "@/lib/nav/dashboardNav";
@@ -24,6 +24,20 @@ export default function Topbar({ title, user, role, menuOpen, onMenuOpen }) {
         >
           <Menu className="size-5" aria-hidden="true" />
         </button>
+
+        <Link
+          href="/"
+          aria-label="Back to Home"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center gap-2 rounded-field text-muted transition-colors hover:bg-surface-soft hover:text-foreground sm:w-auto sm:justify-start sm:px-2"
+        >
+          <House className="size-4 shrink-0" aria-hidden="true" />
+          <span className="hidden sm:inline">Back to Home</span>
+        </Link>
+
+        <span
+          aria-hidden="true"
+          className="hidden h-6 w-px shrink-0 bg-border sm:block"
+        />
 
         <p className="min-w-0 truncate font-heading text-base font-semibold text-ink">
           {title}

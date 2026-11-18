@@ -8,7 +8,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import Container from "@/components/ui/Container";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { DASHBOARD_NAV } from "@/lib/nav/dashboardNav";
@@ -118,7 +117,8 @@ export default function DashboardShell({ children }) {
           onMenuOpen={() => setOpen(true)}
         />
         <main id="dashboard-content" className="flex-1">
-          <Container className="py-6 lg:py-8">{children}</Container>
+          {/* Full-width content: no max-width cap, only comfortable gutters. */}
+          <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
         </main>
       </div>
     </div>
