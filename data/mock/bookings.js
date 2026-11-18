@@ -1,0 +1,167 @@
+// TEMPORARY MOCK DATA: replaced by API data during manual integration.
+// Field names match the assignment booking schema exactly:
+// _id, serviceId, serviceTitle, serviceImage, category, basePrice,
+// technicianName, technicianEmail, customerName, customerEmail,
+// customerPhone, address, preferredDate ("YYYY-MM-DD"), problemDescription,
+// status, finalAmount, paymentStatus, createdAt.
+//
+// status: "requested" | "accepted" | "in-progress" | "completed" | "rejected" | "cancelled"
+// paymentStatus: "unpaid" | "paid"
+// finalAmount stays equal to basePrice until the job is completed.
+//
+// Rows are newest-first. Every row belongs to the same mock customer and
+// copies its service/technician fields from data/mock/services.js.
+
+const CUSTOMER = {
+  customerName: "Sarah Ahmed",
+  customerEmail: "sarah.ahmed@fixmate.example",
+  customerPhone: "+880 1700 000 200",
+  address: "House 12, Road 5, Mirpur, Dhaka",
+};
+
+export const bookings = [
+  {
+    _id: "bk_001",
+    serviceId: "svc_005",
+    serviceTitle: "Split AC Deep Cleaning",
+    serviceImage: "/images/ac-outdoor-unit.jpg",
+    category: "AC",
+    basePrice: 55,
+    technicianName: "Marcus Hale",
+    technicianEmail: "marcus.hale@fixmate.example",
+    ...CUSTOMER,
+    preferredDate: "2026-11-22",
+    problemDescription:
+      "The indoor unit is dripping water and cooling has become noticeably weaker over the last two weeks.",
+    status: "requested",
+    finalAmount: 55,
+    paymentStatus: "unpaid",
+    createdAt: "2026-11-17T09:20:00.000Z",
+  },
+  {
+    _id: "bk_002",
+    serviceId: "svc_002",
+    serviceTitle: "Android Battery Replacement",
+    serviceImage: "/images/pexels-tima-miroshnichenko-6755075.jpg",
+    category: "Smartphone",
+    basePrice: 45,
+    technicianName: "Nadia Rahman",
+    technicianEmail: "nadia.rahman@fixmate.example",
+    ...CUSTOMER,
+    preferredDate: "2026-11-21",
+    problemDescription:
+      "Battery drains from full to empty in about three hours and the back panel is starting to lift.",
+    status: "accepted",
+    finalAmount: 45,
+    paymentStatus: "unpaid",
+    createdAt: "2026-11-16T14:05:00.000Z",
+  },
+  {
+    _id: "bk_003",
+    serviceId: "svc_003",
+    serviceTitle: "Laptop Keyboard Replacement",
+    serviceImage: "/images/laptop-internals.jpg",
+    category: "Laptop & PC",
+    basePrice: 65,
+    technicianName: "Tariq Chowdhury",
+    technicianEmail: "tariq.chowdhury@fixmate.example",
+    ...CUSTOMER,
+    preferredDate: "2026-11-19",
+    problemDescription:
+      "Several keys stopped responding after a small spill and the backlight no longer turns on.",
+    status: "in-progress",
+    finalAmount: 65,
+    paymentStatus: "unpaid",
+    createdAt: "2026-11-15T08:40:00.000Z",
+  },
+  {
+    _id: "bk_004",
+    serviceId: "svc_007",
+    serviceTitle: "Refrigerator Cooling Repair",
+    serviceImage: "/images/refrigerator.jpg",
+    category: "Refrigerator",
+    basePrice: 70,
+    technicianName: "Tariq Chowdhury",
+    technicianEmail: "tariq.chowdhury@fixmate.example",
+    ...CUSTOMER,
+    preferredDate: "2026-11-12",
+    problemDescription:
+      "The freezer still works but the main compartment stays warm even at the coldest setting.",
+    status: "completed",
+    finalAmount: 95,
+    paymentStatus: "unpaid",
+    createdAt: "2026-11-10T10:15:00.000Z",
+  },
+  {
+    _id: "bk_005",
+    serviceId: "svc_001",
+    serviceTitle: "iPhone Screen Replacement",
+    serviceImage: "/images/smartphone-microscope.jpg",
+    category: "Smartphone",
+    basePrice: 89,
+    technicianName: "Marcus Hale",
+    technicianEmail: "marcus.hale@fixmate.example",
+    ...CUSTOMER,
+    preferredDate: "2026-11-08",
+    problemDescription:
+      "Screen cracked in the corner after a drop and the touch stops responding along the right edge.",
+    status: "completed",
+    finalAmount: 89,
+    paymentStatus: "paid",
+    createdAt: "2026-11-06T16:30:00.000Z",
+  },
+  {
+    _id: "bk_006",
+    serviceId: "svc_011",
+    serviceTitle: "Front-Load Washer Repair",
+    serviceImage: "/images/washing-machine.jpg",
+    category: "Washing Machine",
+    basePrice: 60,
+    technicianName: "Tariq Chowdhury",
+    technicianEmail: "tariq.chowdhury@fixmate.example",
+    ...CUSTOMER,
+    preferredDate: "2026-11-04",
+    problemDescription:
+      "The drum fills with water but the cycle stops before draining, leaving clothes soaked.",
+    status: "completed",
+    finalAmount: 75,
+    paymentStatus: "paid",
+    createdAt: "2026-11-02T12:00:00.000Z",
+  },
+  {
+    _id: "bk_007",
+    serviceId: "svc_012",
+    serviceTitle: "Top-Load Washer Motor Replacement",
+    serviceImage: "/images/washing-machine.jpg",
+    category: "Washing Machine",
+    basePrice: 85,
+    technicianName: "Sadia Islam",
+    technicianEmail: "sadia.islam@fixmate.example",
+    ...CUSTOMER,
+    preferredDate: "2026-10-30",
+    problemDescription:
+      "The machine hums but the drum does not spin, and there is a burning smell after a few minutes.",
+    status: "rejected",
+    finalAmount: 85,
+    paymentStatus: "unpaid",
+    createdAt: "2026-10-28T09:10:00.000Z",
+  },
+  {
+    _id: "bk_008",
+    serviceId: "svc_010",
+    serviceTitle: "TV Wall Mount Installation",
+    serviceImage: "/images/tv-wall.jpg",
+    category: "TV",
+    basePrice: 40,
+    technicianName: "Nadia Rahman",
+    technicianEmail: "nadia.rahman@fixmate.example",
+    ...CUSTOMER,
+    preferredDate: "2026-10-26",
+    problemDescription:
+      "Need a 55-inch TV mounted on a plaster wall with the cables hidden behind the panel.",
+    status: "cancelled",
+    finalAmount: 40,
+    paymentStatus: "unpaid",
+    createdAt: "2026-10-24T17:45:00.000Z",
+  },
+];

@@ -20,6 +20,12 @@ import ServicesGrid from "@/components/services/ServicesGrid";
 import RequestRepairPanel from "@/components/services/RequestRepairPanel";
 import SignUpForm from "@/components/auth/SignUpForm";
 import SignInForm from "@/components/auth/SignInForm";
+import DonutChart from "@/components/charts/DonutChart";
+import BarChart from "@/components/charts/BarChart";
+import BookingsSection from "@/components/dashboard/customer/BookingsSection";
+import PaymentsSection from "@/components/dashboard/customer/PaymentsSection";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import ErrorState from "@/components/ui/ErrorState";
 import { ServiceCardSkeleton } from "@/components/shared/ServiceCard";
 
 export const metadata = {
@@ -537,6 +543,127 @@ export default function DesignPreviewPage() {
                   </Card>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        title="Customer dashboard states (A08b preview)"
+        description="Charts, empty bookings and payments, the bookings skeleton, the error presentation and a live confirmation dialog — all props only, no fetching or business logic."
+      >
+        <div className="space-y-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Charts — status donut + category bars
+            </p>
+            <div className="mt-2 grid gap-6 lg:grid-cols-2">
+              <DonutChart
+                title="Bookings by status (sample)"
+                centerLabel="bookings"
+                data={[
+                  {
+                    label: "Requested",
+                    value: 1,
+                    color: "var(--color-status-requested)",
+                  },
+                  {
+                    label: "Accepted",
+                    value: 1,
+                    color: "var(--color-status-accepted)",
+                  },
+                  {
+                    label: "In Progress",
+                    value: 1,
+                    color: "var(--color-status-progress)",
+                  },
+                  {
+                    label: "Completed",
+                    value: 3,
+                    color: "var(--color-status-completed)",
+                  },
+                  {
+                    label: "Rejected",
+                    value: 1,
+                    color: "var(--color-status-rejected)",
+                  },
+                  {
+                    label: "Cancelled",
+                    value: 1,
+                    color: "var(--color-status-cancelled)",
+                  },
+                ]}
+              />
+              <BarChart
+                title="Bookings by category (sample)"
+                data={[
+                  { label: "Smartphone", value: 2 },
+                  { label: "Laptop & PC", value: 1 },
+                  { label: "AC", value: 1 },
+                  { label: "Refrigerator", value: 1 },
+                  { label: "Washing Machine", value: 2 },
+                  { label: "TV", value: 1 },
+                ]}
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Empty bookings
+            </p>
+            <div className="mt-2">
+              <BookingsSection bookings={[]} />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Empty payments
+            </p>
+            <div className="mt-2">
+              <PaymentsSection payments={[]} />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Bookings loading skeleton
+            </p>
+            <div className="mt-2">
+              <BookingsSection bookings={[]} loading />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Error presentation
+            </p>
+            <div className="mt-2">
+              <ErrorState />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Cancel request dialog — click the trigger
+            </p>
+            <div className="mt-2">
+              <ConfirmDialog
+                title="Cancel this request?"
+                description="This cancels your request for Split AC Deep Cleaning. You can book the service again later."
+                confirmLabel="Cancel request"
+                tone="danger"
+                trigger={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="border border-danger/40 text-danger hover:bg-danger-soft"
+                  >
+                    Cancel request
+                  </Button>
+                }
+              />
             </div>
           </div>
         </div>
