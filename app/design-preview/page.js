@@ -16,6 +16,8 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import PaymentBadge from "@/components/shared/PaymentBadge";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import ServicesGrid from "@/components/services/ServicesGrid";
+import { ServiceCardSkeleton } from "@/components/shared/ServiceCard";
 
 export const metadata = {
   title: "Design Preview",
@@ -347,6 +349,31 @@ export default function DesignPreviewPage() {
       <Section title="Footer (A04)" description="Navy footer — fake contact details and placeholder social links by design.">
         <div className="rounded-card border border-border">
           <Footer />
+        </div>
+      </Section>
+
+      <Section
+        title="Services states (A06 preview)"
+        description="Empty state and loading skeleton for /services — same grid classes as the real page, no logic involved."
+      >
+        <div className="space-y-8">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Empty state
+            </p>
+            <ServicesGrid services={[]} />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Loading skeleton
+            </p>
+            <div className="grid auto-rows-fr grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <ServiceCardSkeleton key={index} />
+              ))}
+            </div>
+          </div>
         </div>
       </Section>
     </Container>
