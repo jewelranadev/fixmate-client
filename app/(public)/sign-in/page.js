@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import SignInClient from "@/components/auth/SignInClient";
 import AuthLayout from "@/components/auth/AuthLayout";
 import SignInForm from "@/components/auth/SignInForm";
 
@@ -16,6 +18,9 @@ export default function SignInPage() {
       subtitle="Welcome back. Track your repairs and manage every booking in one place."
     >
       <SignInForm />
+      <Suspense fallback={null}>
+        <SignInClient />
+      </Suspense>
     </AuthLayout>
   );
 }
