@@ -36,6 +36,12 @@ import MyServicesSection from "@/components/dashboard/technician/MyServicesSecti
 import RequestsSection from "@/components/dashboard/technician/RequestsSection";
 import ServiceFields from "@/components/dashboard/technician/ServiceFields";
 import { technician } from "@/data/mock/technicianServices";
+import UsersSection from "@/components/dashboard/admin/UsersSection";
+import AdminServicesSection from "@/components/dashboard/admin/ServicesSection";
+import AdminBookingsSection from "@/components/dashboard/admin/BookingsSection";
+import TransactionsSection from "@/components/dashboard/admin/TransactionsSection";
+import RoleBadge from "@/components/shared/RoleBadge";
+import { currentAdmin } from "@/data/mock/adminUsers";
 import { ServiceCardSkeleton } from "@/components/shared/ServiceCard";
 
 // Sample service used only by the A09 edit-modal preview.
@@ -813,6 +819,110 @@ export default function DesignPreviewPage() {
                   />
                 </div>
               </Modal>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        title="Admin dashboard states (A10 preview)"
+        description="Role badges, the locked own-role row, and the empty, loading and error states for users, services, bookings and transactions — all presentation only."
+      >
+        <div className="space-y-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Role badges
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <RoleBadge role="customer" />
+              <RoleBadge role="technician" />
+              <RoleBadge role="admin" />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Own-role row — select and Save disabled
+            </p>
+            <div className="mt-2">
+              <UsersSection
+                users={[currentAdmin]}
+                currentUserId={currentAdmin._id}
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Empty users
+            </p>
+            <div className="mt-2">
+              <UsersSection users={[]} currentUserId={currentAdmin._id} />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Empty services
+            </p>
+            <div className="mt-2">
+              <AdminServicesSection
+                services={[]}
+                idPrefix="preview-admin-svc-empty"
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Empty bookings
+            </p>
+            <div className="mt-2">
+              <AdminBookingsSection
+                bookings={[]}
+                idPrefix="preview-admin-booking-empty"
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Empty transactions
+            </p>
+            <div className="mt-2">
+              <TransactionsSection payments={[]} />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Loading lists
+            </p>
+            <div className="mt-2 space-y-6">
+              <UsersSection users={[]} currentUserId={currentAdmin._id} loading />
+              <AdminServicesSection
+                services={[]}
+                loading
+                idPrefix="preview-admin-svc-loading"
+              />
+              <AdminBookingsSection
+                bookings={[]}
+                loading
+                idPrefix="preview-admin-booking-loading"
+              />
+              <TransactionsSection payments={[]} loading />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Error states
+            </p>
+            <div className="mt-2 space-y-6">
+              <UsersSection users={[]} error />
+              <AdminServicesSection services={[]} error />
+              <AdminBookingsSection bookings={[]} error />
+              <TransactionsSection payments={[]} error />
             </div>
           </div>
         </div>
