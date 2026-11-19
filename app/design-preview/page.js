@@ -42,7 +42,21 @@ import AdminBookingsSection from "@/components/dashboard/admin/BookingsSection";
 import TransactionsSection from "@/components/dashboard/admin/TransactionsSection";
 import RoleBadge from "@/components/shared/RoleBadge";
 import { currentAdmin } from "@/data/mock/adminUsers";
+import ProfileSection from "@/components/dashboard/ProfileSection";
+import { profileUser } from "@/data/mock/profile";
 import { ServiceCardSkeleton } from "@/components/shared/ServiceCard";
+
+// Technician variant used only by the A11 profile preview.
+const PREVIEW_TECHNICIAN = {
+  name: "Marcus Hale",
+  email: "marcus.hale@fixmate.example",
+  image: "",
+  role: "technician",
+  phone: "+880 1700 000 101",
+  area: "Mirpur, Dhaka",
+  bio: "Bench-trained electronics technician with nine years on phone screens, laptop boards and split AC servicing. Clear quotes before any part is ordered.",
+  createdAt: "2026-02-18T09:00:00.000Z",
+};
 
 // Sample service used only by the A09 edit-modal preview.
 const PREVIEW_SERVICE = {
@@ -923,6 +937,81 @@ export default function DesignPreviewPage() {
               <AdminServicesSection services={[]} error />
               <AdminBookingsSection bookings={[]} error />
               <TransactionsSection payments={[]} error />
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        title="Profile states (A11 preview)"
+        description="Shared profile layout for each role, plus the field-error, success and submitting presentations — all presentation only."
+      >
+        <div className="space-y-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Technician profile (bio helper visible)
+            </p>
+            <div className="mt-2">
+              <ProfileSection
+                user={PREVIEW_TECHNICIAN}
+                idPrefix="preview-profile-tech"
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Customer profile
+            </p>
+            <div className="mt-2">
+              <ProfileSection
+                user={profileUser}
+                idPrefix="preview-profile-customer"
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Error state with field errors
+            </p>
+            <div className="mt-2">
+              <ProfileSection
+                user={profileUser}
+                idPrefix="preview-profile-error"
+                status="error"
+                errors={{
+                  name: "Enter your full name.",
+                  phone: "Enter a valid phone number.",
+                }}
+                message="We couldn't update your profile. Please review the fields and try again."
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Success state
+            </p>
+            <div className="mt-2">
+              <ProfileSection
+                user={PREVIEW_TECHNICIAN}
+                idPrefix="preview-profile-success"
+                status="success"
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Submitting state
+            </p>
+            <div className="mt-2">
+              <ProfileSection
+                user={profileUser}
+                idPrefix="preview-profile-submitting"
+                isSubmitting
+              />
             </div>
           </div>
         </div>
