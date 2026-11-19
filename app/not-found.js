@@ -1,6 +1,7 @@
-import Navbar from "@/components/layout/Navbar";
+
 import Footer from "@/components/layout/Footer";
 import NotFoundView from "@/components/system/NotFoundView";
+import SessionNavbar from "@/components/layout/SessionNavbar";
 
 export const metadata = {
   title: "Page not found",
@@ -14,7 +15,7 @@ export const metadata = {
 export default function NotFound() {
   return (
     <>
-      <Navbar />
+      <SessionNavbar />
       <main className="flex-1">
         <NotFoundView />
       </main>

@@ -11,15 +11,15 @@ import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { DASHBOARD_NAV } from "@/lib/nav/dashboardNav";
-import { mockUserForRole, roleFromPathname } from "@/lib/mock/mockRole";
-
+import { roleFromPathname } from "@/lib/mock/mockRole";
+import { useAuthUser } from "@/lib/use-auth-user";
 export default function DashboardShell({ children }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const closeButtonRef = useRef(null);
 
   const role = roleFromPathname(pathname);
-  const user = mockUserForRole(role);
+  const { user } = useAuthUser();
   const links = DASHBOARD_NAV[role] || [];
   const activeLink = links.find((link) => link.href === pathname);
   const title = activeLink ? activeLink.label : "Dashboard";

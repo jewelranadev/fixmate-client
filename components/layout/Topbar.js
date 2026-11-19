@@ -7,8 +7,13 @@ import { House, LogOut, Menu } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import Badge from "@/components/ui/Badge";
 import { ROLE_LABELS } from "@/lib/nav/dashboardNav";
+import SignOutButton from "@/lib/SignOutButton";
 
-const ROLE_TONES = { customer: "info", technician: "secondary", admin: "primary" };
+const ROLE_TONES = {
+  customer: "info",
+  technician: "secondary",
+  admin: "primary",
+};
 
 export default function Topbar({ title, user, role, menuOpen, onMenuOpen }) {
   return (
@@ -67,14 +72,10 @@ export default function Topbar({ title, user, role, menuOpen, onMenuOpen }) {
           </Link>
 
           {/* Non-functional visual item — Sign Out is wired during integration */}
-          <span
-            aria-disabled="true"
-            title="Sign Out becomes functional after integration"
-            className="hidden h-11 cursor-default items-center gap-1.5 rounded-field px-2 text-sm font-medium text-muted sm:inline-flex"
-          >
+          <SignOutButton className="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-field px-3 text-left text-sm font-medium text-ink hover:bg-surface-soft">
             <LogOut className="size-4" aria-hidden="true" />
             Sign Out
-          </span>
+          </SignOutButton>
         </div>
       </div>
     </header>

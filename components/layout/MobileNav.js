@@ -12,6 +12,7 @@ import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import NavLinks from "./NavLinks";
 import { ROLE_LABELS } from "@/lib/nav/dashboardNav";
+import SignOutButton from "@/lib/SignOutButton";
 
 const DASHBOARD_HREFS = {
   customer: "/dashboard/customer",
@@ -19,7 +20,11 @@ const DASHBOARD_HREFS = {
   admin: "/dashboard/admin",
 };
 
-const ROLE_TONES = { customer: "info", technician: "secondary", admin: "primary" };
+const ROLE_TONES = {
+  customer: "info",
+  technician: "secondary",
+  admin: "primary",
+};
 
 export default function MobileNav({ user }) {
   const [open, setOpen] = useState(false);
@@ -70,28 +75,34 @@ export default function MobileNav({ user }) {
                   <p className="truncate text-sm font-semibold text-ink">
                     {user.name}
                   </p>
-                  <Badge tone={ROLE_TONES[user.role] || "neutral"} className="mt-0.5">
+                  <Badge
+                    tone={ROLE_TONES[user.role] || "neutral"}
+                    className="mt-0.5"
+                  >
                     {ROLE_LABELS[user.role] || "User"}
                   </Badge>
                 </div>
               </div>
               <Link href={dashboardHref} onClick={close} className={itemClass}>
-                <LayoutDashboard className="size-4 text-muted" aria-hidden="true" />
+                <LayoutDashboard
+                  className="size-4 text-muted"
+                  aria-hidden="true"
+                />
                 Dashboard
               </Link>
-              <Link href="/dashboard/profile" onClick={close} className={itemClass}>
+              <Link
+                href="/dashboard/profile"
+                onClick={close}
+                className={itemClass}
+              >
                 <UserRound className="size-4 text-muted" aria-hidden="true" />
                 Update Profile
               </Link>
               {/* VISUAL ONLY: Sign Out is wired during manual integration. */}
-              <span
-                aria-disabled="true"
-                title="Wired during manual integration"
-                className="flex h-11 cursor-not-allowed items-center gap-2.5 rounded-field px-3 text-sm font-medium text-muted"
-              >
+              <SignOutButton className="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-field px-3 text-left text-sm font-medium text-ink hover:bg-surface-soft">
                 <LogOut className="size-4" aria-hidden="true" />
                 Sign Out
-              </span>
+              </SignOutButton>
             </div>
           ) : (
             <div className="flex gap-3 border-t border-border pt-4">

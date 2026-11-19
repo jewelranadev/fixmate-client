@@ -11,6 +11,7 @@ import { ChevronDown, LayoutDashboard, LogOut, UserRound } from "lucide-react";
 import Avatar from "@/components/ui/Avatar";
 import Badge from "@/components/ui/Badge";
 import { ROLE_LABELS } from "@/lib/nav/dashboardNav";
+import SignOutButton from "@/lib/SignOutButton";
 
 const DASHBOARD_HREFS = {
   customer: "/dashboard/customer",
@@ -118,16 +119,10 @@ export default function UserMenu({ user }) {
               Update Profile
             </Link>
             {/* VISUAL ONLY: Sign Out is wired during manual integration. */}
-            <button
-              type="button"
-              role="menuitem"
-              aria-disabled="true"
-              title="Wired during manual integration"
-              className="flex h-11 w-full cursor-not-allowed items-center gap-2.5 rounded-field px-3 text-left text-sm font-medium text-muted"
-            >
-              <LogOut className="size-4" aria-hidden="true" />
-              Sign Out
-            </button>
+            <SignOutButton className="flex h-11 w-full cursor-not-allowed items-center gap-2.5 rounded-field px-3 text-left text-sm font-medium text-muted">
+  <LogOut className="size-4" aria-hidden="true" />
+  Sign Out
+</SignOutButton>
           </div>
         </div>
       )}
