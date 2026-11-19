@@ -1,7 +1,8 @@
 import Container from "@/components/ui/Container";
 import ServicesFilterBar from "@/components/services/ServicesFilterBar";
 import ServicesGrid from "@/components/services/ServicesGrid";
-import { services } from "@/data/mock/services";
+import { getServices } from "@/lib/services-api";
+const first = (value) => (Array.isArray(value) ? value[0] : value) ?? "";
 
 export const metadata = {
   title: "Browse Services",
@@ -19,7 +20,15 @@ const availableServices = services
   )
   .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await getServices();
+  const params = await searchParams;
+  const values = {
+    q: first(params.q),
+    category: first(params.category),
+    serviceMode: first(params.serviceMode),
+    sort: first(params.sort) || "newest",
+  };
   return (
     <>
       <section className="border-b border-border bg-surface py-12 lg:py-16">
