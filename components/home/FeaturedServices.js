@@ -2,18 +2,10 @@ import { ArrowRight } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Container from "@/components/ui/Container";
 import ServiceCard from "@/components/shared/ServiceCard";
-import { services } from "@/data/mock/services";
 import SectionHeading from "./SectionHeading";
 
-export default function FeaturedServices() {
-  // MOCK ONLY: the real page fetches approved+available services with
-  // .sort({ createdAt: -1 }).limit(6)
-  // ISO-8601 strings compare correctly as plain strings, so no Date parsing.
-  const featured = services
-    .filter((service) => service.approvalStatus === "approved" && service.isAvailable)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    .slice(0, 6);
-
+export default function FeaturedServices({ services }) {
+  const featured = services.slice(0, 6);
   return (
     <section className="bg-background py-16 lg:py-24">
       <Container>
