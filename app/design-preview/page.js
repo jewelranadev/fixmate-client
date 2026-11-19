@@ -45,6 +45,11 @@ import { currentAdmin } from "@/data/mock/adminUsers";
 import ProfileSection from "@/components/dashboard/ProfileSection";
 import { profileUser } from "@/data/mock/profile";
 import { ServiceCardSkeleton } from "@/components/shared/ServiceCard";
+import PaymentResult from "@/components/system/PaymentResult";
+import PaymentCancelled from "@/components/system/PaymentCancelled";
+import NotFoundView from "@/components/system/NotFoundView";
+import ForbiddenState from "@/components/system/ForbiddenState";
+import PageErrorView from "@/components/system/PageErrorView";
 
 // Technician variant used only by the A11 profile preview.
 const PREVIEW_TECHNICIAN = {
@@ -1012,6 +1017,86 @@ export default function DesignPreviewPage() {
                 idPrefix="preview-profile-submitting"
                 isSubmitting
               />
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        title="System pages (A12 preview)"
+        description="Payment outcomes, the 404 and access states, and the shared error fallbacks — all presentation only."
+      >
+        <div className="space-y-10">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Payment result — success
+            </p>
+            <div className="mt-2 rounded-card border border-dashed border-border-strong">
+              <PaymentResult
+                headingLevel="h2"
+                status="success"
+                amount={95}
+                transactionId="pi_mock_0001"
+                serviceTitle="Refrigerator Cooling Repair"
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Payment result — verifying
+            </p>
+            <div className="mt-2 rounded-card border border-dashed border-border-strong">
+              <PaymentResult headingLevel="h2" status="verifying" />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Payment result — error
+            </p>
+            <div className="mt-2 rounded-card border border-dashed border-border-strong">
+              <PaymentResult
+                headingLevel="h2"
+                status="error"
+                message="The payment reference could not be matched. Nothing has been charged twice — check your bookings before trying again."
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Payment cancelled
+            </p>
+            <div className="mt-2 rounded-card border border-dashed border-border-strong">
+              <PaymentCancelled headingLevel="h2" />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              404 — not found
+            </p>
+            <div className="mt-2 rounded-card border border-dashed border-border-strong">
+              <NotFoundView headingLevel="h2" />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              403 — forbidden (default dashboard link)
+            </p>
+            <div className="mt-2 rounded-card border border-dashed border-border-strong">
+              <ForbiddenState headingLevel="h2" />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              Page error (without a retry handler)
+            </p>
+            <div className="mt-2 rounded-card border border-dashed border-border-strong p-4">
+              <PageErrorView headingLevel="h2" />
             </div>
           </div>
         </div>
