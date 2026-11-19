@@ -126,6 +126,21 @@ export default function RequestRepairPanel({
             aria-labelledby={headingId}
             noValidate
           >
+            {/*
+              Native submission guard. Pressing Enter fires a click on the form's
+              default (first submit) button — this one is permanently disabled, so
+              the form can never submit natively.
+            */}
+            <button
+              type="submit"
+              disabled
+              tabIndex={-1}
+              aria-hidden="true"
+              className="sr-only"
+            >
+              Submit
+            </button>
+
             <Field
               label="Name"
               htmlFor={`${uid}-name`}
