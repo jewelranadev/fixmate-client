@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Lock, Send } from "lucide-react";
 import Alert from "@/components/ui/Alert";
@@ -10,10 +12,11 @@ import Textarea from "@/components/ui/Textarea";
 /**
  * RequestRepairPanel — the request experience for one service.
  *
- * Presentational only: no "use client", no session checks, no role
- * detection, no validation and no submit logic. Which experience renders
- * is decided entirely by the `variant` prop; the owner wires real data,
- * validation and booking creation in the manual phases.
+ * Presentational: no session checks, no role detection, no validation and no
+ * network calls. Which experience renders is decided entirely by the
+ * `variant` prop; the client wrapper supplies `onSubmit`, `errors` and
+ * `status`. When no handler is passed (e.g. the design preview) the form
+ * still prevents its native submission.
  *
  * Variants:
  *   guest      — locked state + sign-in call to action
@@ -34,17 +37,18 @@ export default function RequestRepairPanel({
   errors = {},
   status = "idle",
   defaults = {},
+  idPrefix,
+  onSubmit,
+  isSubmitting = false,
 }) {
   const customer = {
     name: defaults.name ?? MOCK_CUSTOMER.name,
     email: defaults.email ?? MOCK_CUSTOMER.email,
   };
 
-  // Unique DOM ids keep labels/errors bound when several panels are shown
-  // side by side on the temporary design-preview page.
-  const uid = `repair-${variant}-${status}-${
-    Object.keys(errors).length ? "errors" : "clean"
-  }`;
+  // Stable DOM ids: only the explicit prefix or the service id is used, so
+  // status/error changes never move labels or aria references mid-interaction.
+  const uid = idPrefix ?? `repair-${serviceId ?? "panel"}`;
   const headingId = `${uid}-heading`;
 
   return (
@@ -125,22 +129,8 @@ export default function RequestRepairPanel({
             className="space-y-4"
             aria-labelledby={headingId}
             noValidate
+            onSubmit={onSubmit ?? ((event) => event.preventDefault())}
           >
-            {/*
-              Native submission guard. Pressing Enter fires a click on the form's
-              default (first submit) button — this one is permanently disabled, so
-              the form can never submit natively.
-            */}
-            <button
-              type="submit"
-              disabled
-              tabIndex={-1}
-              aria-hidden="true"
-              className="sr-only"
-            >
-              Submit
-            </button>
-
             <Field
               label="Name"
               htmlFor={`${uid}-name`}
@@ -246,8 +236,7 @@ export default function RequestRepairPanel({
               />
             </Field>
 
-            {/* Wired by owner in manual phase M6 (booking creation + validation). No submit logic here. */}
-            <Button type="button" className="w-full">
+            <Button type="submit" loading={isSubmitting} className="w-full">
               <Send className="size-4" aria-hidden="true" />
               Send Repair Request
             </Button>

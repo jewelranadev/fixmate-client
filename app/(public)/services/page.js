@@ -1,7 +1,9 @@
 import Container from "@/components/ui/Container";
+import ErrorState from "@/components/ui/ErrorState";
 import ServicesFilterBar from "@/components/services/ServicesFilterBar";
 import ServicesGrid from "@/components/services/ServicesGrid";
 import { getServices } from "@/lib/services-api";
+
 const first = (value) => (Array.isArray(value) ? value[0] : value) ?? "";
 
 export const metadata = {
@@ -10,25 +12,24 @@ export const metadata = {
     "Browse approved repair services for smartphones, laptops, ACs, refrigerators, TVs, washing machines and electrical work — with starting prices, repair modes and technicians.",
 };
 
-// MOCK ONLY: the real page reads searchParams (q, category, serviceMode, sort) and the server
-// queries MongoDB for search/filter/sort. Do NOT filter on the client.
-// The only client-free work here is the display default: approved + available,
-// newest first. The filters above do not affect this list until M5 is wired.
-const availableServices = services
-  .filter(
-    (service) => service.approvalStatus === "approved" && service.isAvailable,
-  )
-  .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-
-export default async function ServicesPage() {
-  const services = await getServices();
-  const params = await searchParams;
+// Searching, filtering and sorting are done by the API — never on the client.
+export default async function ServicesPage({ searchParams }) {
+  const params = (await searchParams) ?? {};
   const values = {
     q: first(params.q),
     category: first(params.category),
     serviceMode: first(params.serviceMode),
     sort: first(params.sort) || "newest",
   };
+
+  let services = [];
+  let failed = false;
+  try {
+    services = await getServices(values);
+  } catch {
+    failed = true;
+  }
+
   return (
     <>
       <section className="border-b border-border bg-surface py-12 lg:py-16">
@@ -47,17 +48,26 @@ export default async function ServicesPage() {
 
       <section className="bg-background py-10 lg:py-14">
         <Container className="space-y-6">
-          <ServicesFilterBar />
+          <ServicesFilterBar defaultValues={values} />
 
-          <p className="text-sm text-muted" aria-live="polite">
-            Showing{" "}
-            <span className="font-semibold text-foreground">
-              {availableServices.length}
-            </span>{" "}
-            {availableServices.length === 1 ? "service" : "services"}
-          </p>
+          {failed ? (
+            <ErrorState
+              title="We couldn't load services"
+              description="The service list is temporarily unavailable. Please try again in a moment."
+            />
+          ) : (
+            <>
+              <p className="text-sm text-muted" aria-live="polite">
+                Showing{" "}
+                <span className="font-semibold text-foreground">
+                  {services.length}
+                </span>{" "}
+                {services.length === 1 ? "service" : "services"}
+              </p>
 
-          <ServicesGrid services={availableServices} />
+              <ServicesGrid services={services} />
+            </>
+          )}
         </Container>
       </section>
     </>

@@ -16,17 +16,13 @@ import {
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
 import Container from "@/components/ui/Container";
-import RequestRepairPanel from "@/components/services/RequestRepairPanel";
+import RequestRepairClient from "@/components/services/RequestRepairClient";
 import TechnicianCard from "@/components/services/TechnicianCard";
 
-// Check whether service is approved and available
-function isServiceAvailable(service) {
-  return (
-    Boolean(service) &&
-    service.approvalStatus === "approved" &&
-    service.isAvailable === true
-  );
-}
+// The public layout renders a client navbar that reads usePathname(). This
+// dynamic route has no pathname at build time, so let it block instead of
+// prerendering a static shell (see /docs/messages/blocking-prerender-client-hook).
+export const instant = false;
 
 // Generate dynamic page metadata from API
 export async function generateMetadata({ params }) {
@@ -35,7 +31,7 @@ export async function generateMetadata({ params }) {
   const data = await getService(id);
   const service = data?.service;
 
-  if (!isServiceAvailable(service)) {
+  if (!service) {
     return {
       title: "Service not available",
     };
@@ -60,11 +56,6 @@ export default async function ServiceDetailsPage({ params }) {
 
   // Extract service from API response
   const { service } = data;
-
-  // Check service availability
-  if (!isServiceAvailable(service)) {
-    notFound();
-  }
 
   // Get technician information from API response
   const technician = data.technician ?? {
@@ -238,9 +229,8 @@ export default async function ServiceDetailsPage({ params }) {
             </Card>
 
             {/* Repair Request Panel */}
-            <RequestRepairPanel
-              variant="guest"
-              serviceId={service._id}
+            <RequestRepairClient
+              serviceId={String(service._id)}
               serviceTitle={service.title}
             />
           </aside>

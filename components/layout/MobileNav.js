@@ -98,7 +98,6 @@ export default function MobileNav({ user }) {
                 <UserRound className="size-4 text-muted" aria-hidden="true" />
                 Update Profile
               </Link>
-              {/* VISUAL ONLY: Sign Out is wired during manual integration. */}
               <SignOutButton className="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-field px-3 text-left text-sm font-medium text-ink hover:bg-surface-soft">
                 <LogOut className="size-4" aria-hidden="true" />
                 Sign Out

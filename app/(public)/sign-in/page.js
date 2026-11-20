@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import SignInClient from "@/components/auth/SignInClient";
 import AuthLayout from "@/components/auth/AuthLayout";
-import SignInForm from "@/components/auth/SignInForm";
+import RedirectIfAuthed from "@/components/auth/RedirectIfAuthed";
+import SignInClient from "@/components/auth/SignInClient";
 
 export const metadata = {
   title: "Sign in",
@@ -9,17 +9,17 @@ export const metadata = {
     "Sign in to FixMate to track repairs, manage bookings and message your technician.",
 };
 
-// UI only: the form renders idle with no errors. BetterAuth sign-in and the
-// redirect (requested page or role dashboard) belong to the owner's phases.
 export default function SignInPage() {
   return (
     <AuthLayout
       title="Sign in"
       subtitle="Welcome back. Track your repairs and manage every booking in one place."
     >
-      <SignInForm />
       <Suspense fallback={null}>
         <SignInClient />
+      </Suspense>
+      <Suspense fallback={null}>
+        <RedirectIfAuthed />
       </Suspense>
     </AuthLayout>
   );

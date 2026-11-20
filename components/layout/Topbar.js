@@ -1,6 +1,6 @@
-// Top bar: hamburger (mobile), page-area title slot, and the mock profile
-// cluster (avatar + name + role badge + Update Profile link + visual-only
-// Sign Out item). Pure rendering — state lives in DashboardShell.
+// Top bar: hamburger (mobile), page-area title slot, and the profile cluster
+// (avatar + name + role badge + Update Profile link + Sign Out). Pure
+// rendering — state lives in DashboardShell.
 
 import Link from "next/link";
 import { House, LogOut, Menu } from "lucide-react";
@@ -71,7 +71,6 @@ export default function Topbar({ title, user, role, menuOpen, onMenuOpen }) {
             Update Profile
           </Link>
 
-          {/* Non-functional visual item — Sign Out is wired during integration */}
           <SignOutButton className="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-field px-3 text-left text-sm font-medium text-ink hover:bg-surface-soft">
             <LogOut className="size-4" aria-hidden="true" />
             Sign Out

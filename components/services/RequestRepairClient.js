@@ -18,7 +18,9 @@ export default function RequestRepairClient({ serviceId, serviceTitle }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    // Capture the form now: React nulls currentTarget once the handler yields.
+    const formEl = event.currentTarget;
+    const form = new FormData(formEl);
     const values = {
       customerPhone: String(form.get("customerPhone") ?? ""),
       address: String(form.get("address") ?? ""),
@@ -37,7 +39,7 @@ export default function RequestRepairClient({ serviceId, serviceTitle }) {
       await apiFetch("/api/bookings", { method: "POST", body: { serviceId, ...values } });
       setStatus("success");
       toast.success("Repair request sent");
-      event.currentTarget.reset();
+      formEl.reset();
     } catch (error) {
       if (error.status === 409) {
         setStatus("duplicate");

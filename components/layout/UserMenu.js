@@ -1,9 +1,8 @@
 "use client";
 
 // Logged-in profile dropdown: avatar + name + role badge trigger, panel with
-// name/email, Dashboard (role-correct), Update Profile, and a VISUAL-ONLY
-// Sign Out item. Open/close is the only interactivity (click, Escape,
-// outside click). No auth, no sessions, no redirects.
+// name/email, Dashboard (role-correct), Update Profile and Sign Out.
+// Open/close is the only local interactivity (click, Escape, outside click).
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -118,11 +117,10 @@ export default function UserMenu({ user }) {
               <UserRound className="size-4 text-muted" aria-hidden="true" />
               Update Profile
             </Link>
-            {/* VISUAL ONLY: Sign Out is wired during manual integration. */}
-            <SignOutButton className="flex h-11 w-full cursor-not-allowed items-center gap-2.5 rounded-field px-3 text-left text-sm font-medium text-muted">
-  <LogOut className="size-4" aria-hidden="true" />
-  Sign Out
-</SignOutButton>
+            <SignOutButton className="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-field px-3 text-left text-sm font-medium text-ink hover:bg-surface-soft">
+              <LogOut className="size-4" aria-hidden="true" />
+              Sign Out
+            </SignOutButton>
           </div>
         </div>
       )}

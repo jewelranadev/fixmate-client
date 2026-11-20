@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { User, Wrench } from "lucide-react";
 import Alert from "@/components/ui/Alert";
@@ -10,8 +12,8 @@ import PasswordField from "@/components/auth/PasswordField";
  * SignUpForm — presentation only.
  *
  * No validation, no auth call, no redirect, no toast. Every error, alert and
- * loading state below is driven by props so the owner can wire BetterAuth in
- * the manual phases. There is deliberately no Admin role option.
+ * loading state below is driven by props. There is deliberately no Admin role
+ * option.
  */
 
 const ROLES = [
@@ -40,6 +42,7 @@ export default function SignUpForm({
   status = "idle",
   message = "",
   isSubmitting = false,
+  onSubmit,
 }) {
   // Unique ids keep repeated preview instances (idle / error / success /
   // submitting) from colliding on the temporary design-preview page.
@@ -57,22 +60,11 @@ export default function SignUpForm({
 
   return (
     <div className="space-y-6">
-      <form noValidate className="space-y-5">
-        {/*
-          Native submission guard. Pressing Enter fires a click on the form's
-          default (first submit) button — this one is permanently disabled, so
-          the form can never submit natively and the password never hits the URL.
-        */}
-        <button
-          type="submit"
-          disabled
-          tabIndex={-1}
-          aria-hidden="true"
-          className="sr-only"
-        >
-          Submit
-        </button>
-
+      <form
+        noValidate
+        className="space-y-5"
+        onSubmit={onSubmit ?? ((event) => event.preventDefault())}
+      >
         {shownMessage && (
           <Alert
             variant={status === "success" ? "success" : "error"}
@@ -191,9 +183,8 @@ export default function SignUpForm({
           )}
         </fieldset>
 
-        {/* Wired by owner in manual phases M1/M13 (BetterAuth sign-up, validation, toasts, redirect). No auth logic here. */}
         <Button
-          type="button"
+          type="submit"
           size="lg"
           loading={isSubmitting}
           className="w-full"

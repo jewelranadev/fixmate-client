@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Alert from "@/components/ui/Alert";
 import Button from "@/components/ui/Button";
@@ -17,6 +19,7 @@ export default function SignInForm({
   status = "idle",
   message = "",
   isSubmitting = false,
+  onSubmit,
 }) {
   const uid = `signin-${status}-${
     Object.keys(errors).length ? "errors" : "clean"
@@ -29,22 +32,11 @@ export default function SignInForm({
 
   return (
     <div className="space-y-6">
-      <form noValidate className="space-y-5">
-        {/*
-          Native submission guard. Pressing Enter fires a click on the form's
-          default (first submit) button — this one is permanently disabled, so
-          the form can never submit natively and the password never hits the URL.
-        */}
-        <button
-          type="submit"
-          disabled
-          tabIndex={-1}
-          aria-hidden="true"
-          className="sr-only"
-        >
-          Submit
-        </button>
-
+      <form
+        noValidate
+        className="space-y-5"
+        onSubmit={onSubmit ?? ((event) => event.preventDefault())}
+      >
         {shownMessage && (
           <Alert
             variant={status === "success" ? "success" : "error"}
@@ -82,9 +74,8 @@ export default function SignInForm({
           />
         </Field>
 
-        {/* Wired by owner in M1/M13 (BetterAuth sign-in, redirect to requested page or role dashboard). No auth logic here. */}
         <Button
-          type="button"
+          type="submit"
           size="lg"
           loading={isSubmitting}
           className="w-full"
