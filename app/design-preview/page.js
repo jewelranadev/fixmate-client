@@ -480,7 +480,7 @@ export default function DesignPreviewPage() {
               caption: "Admin account",
               props: { variant: "admin" },
             },
-          ].map(({ caption, props }) => (
+          ].map(({ caption, props }, index) => (
             <div key={caption} className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
                 {caption}
@@ -488,6 +488,7 @@ export default function DesignPreviewPage() {
               <RequestRepairPanel
                 serviceId="svc_001"
                 serviceTitle="iPhone Screen Replacement"
+                idPrefix={`preview-repair-${index}`}
                 {...props}
               />
             </div>
