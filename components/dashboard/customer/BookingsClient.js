@@ -21,7 +21,17 @@ export default function BookingsClient() {
       toast.error(err.message || "Could not cancel this booking");
     }
   }
-
+  async function handlePay(id) {
+    try {
+      const { url } = await apiFetch("/api/payments/create-checkout-session", {
+        method: "POST",
+        body: { bookingId: id }, // only the id: the server reads the amount from the database
+      });
+      window.location.href = url; // redirect to Stripe Checkout
+    } catch (err) {
+      toast.error(err.message || "Could not start the payment");
+    }
+  }
   if (error) {
     return (
       <RetryErrorState
