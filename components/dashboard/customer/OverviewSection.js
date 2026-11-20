@@ -17,8 +17,6 @@ import { formatDate } from "@/lib/format/display";
 const ACTIVE_STATUSES = ["requested", "accepted", "in-progress"];
 
 export default function OverviewSection({ bookings = [] }) {
-  // MOCK ONLY: counts are computed from the mock array. The API supplies
-  // these aggregates once the dashboard is wired.
   const total = bookings.length;
   const active = bookings.filter((booking) =>
     ACTIVE_STATUSES.includes(booking.status),

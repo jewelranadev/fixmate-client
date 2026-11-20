@@ -36,7 +36,6 @@ export default function PaymentsSection({
     );
   }
 
-  // MOCK ONLY: totals are derived from the mock array until the API is wired.
   const total = payments.reduce(
     (sum, payment) => sum + (Number(payment.amount) || 0),
     0,
@@ -48,13 +47,17 @@ export default function PaymentsSection({
   return (
     <div className="space-y-6">
       <div className="sm:max-w-xs">
-        <StatsCard
-          icon={CreditCard}
-          label="Total paid"
-          value={formatCurrency(total)}
-          hint={countLabel}
-          tone="success"
-        />
+        {loading ? (
+          <div className="h-28 animate-pulse rounded-card border border-border bg-surface" />
+        ) : (
+          <StatsCard
+            icon={CreditCard}
+            label="Total paid"
+            value={formatCurrency(total)}
+            hint={countLabel}
+            tone="success"
+          />
+        )}
       </div>
 
       <ResponsiveDataList

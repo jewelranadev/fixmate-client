@@ -14,8 +14,8 @@ import { formatCurrency, formatDate } from "@/lib/format/display";
  *
  * Takes `bookings` as a prop (empty array previews the empty state) plus
  * `loading` / `error` flags for the skeleton and error presentations.
- * Actions are visual only: Cancel opens a confirmation dialog, Pay Now has
- * no handler.
+ * Cancel runs `onCancel` through the confirmation dialog; Pay Now has no
+ * handler yet (Stripe is wired later).
  */
 
 function Price({ booking }) {
@@ -44,7 +44,7 @@ function Price({ booking }) {
   );
 }
 
-function BookingActions({ booking }) {
+function BookingActions({ booking, onCancel }) {
   if (booking.status === "requested") {
     return (
       <ConfirmDialog
@@ -52,6 +52,7 @@ function BookingActions({ booking }) {
         description={`This cancels your request for ${booking.serviceTitle}. You can book the service again later.`}
         confirmLabel="Cancel request"
         tone="danger"
+        onConfirm={onCancel ? () => onCancel(booking._id) : undefined}
         trigger={
           <Button
             type="button"
@@ -78,7 +79,7 @@ function BookingActions({ booking }) {
   return null;
 }
 
-function BookingCard({ booking }) {
+function BookingCard({ booking, onCancel }) {
   return (
     <div className="space-y-3">
       <div className="flex items-start gap-3">
@@ -126,7 +127,7 @@ function BookingCard({ booking }) {
       </dl>
 
       <div className="flex min-h-11 items-center justify-end border-t border-border pt-3">
-        <BookingActions booking={booking} />
+        <BookingActions booking={booking} onCancel={onCancel} />
       </div>
     </div>
   );
@@ -136,6 +137,7 @@ export default function BookingsSection({
   bookings = [],
   loading = false,
   error = false,
+  onCancel,
 }) {
   if (error) {
     return (
@@ -225,12 +227,14 @@ export default function BookingsSection({
           className: "text-right",
           render: (booking) => (
             <div className="flex justify-end">
-              <BookingActions booking={booking} />
+              <BookingActions booking={booking} onCancel={onCancel} />
             </div>
           ),
         },
       ]}
-      renderCard={(booking) => <BookingCard booking={booking} />}
+      renderCard={(booking) => (
+        <BookingCard booking={booking} onCancel={onCancel} />
+      )}
     />
   );
 }

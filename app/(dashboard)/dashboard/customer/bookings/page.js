@@ -1,6 +1,5 @@
 import PageHeader from "@/components/dashboard/PageHeader";
-import BookingsSection from "@/components/dashboard/customer/BookingsSection";
-import { bookings } from "@/data/mock/bookings";
+import BookingsClient from "@/components/dashboard/customer/BookingsClient";
 
 export const metadata = {
   title: "My Bookings",
@@ -9,14 +8,13 @@ export const metadata = {
 };
 
 export default function CustomerBookingsPage() {
-  // MOCK ONLY: replaced by the customer's bookings from the API.
   return (
     <div className="space-y-6 lg:space-y-8">
       <PageHeader
         title="My Bookings"
         description="Every repair request you have sent, from first request to payment."
       />
-      <BookingsSection bookings={bookings} />
+      <BookingsClient />
     </div>
   );
 }

@@ -19,8 +19,10 @@ import Button from "@/components/ui/Button";
  * on Cancel, Escape and backdrop click. Focus returns to whatever was focused
  * when it opened.
  *
- * The confirm button only closes the dialog.
- * Wired by owner in manual phase M7.
+ * When `onConfirm` is provided it runs first; the dialog closes afterwards.
+ * While it is pending, the confirm button shows a loading state and Cancel,
+ * Escape and backdrop clicks are ignored. Without `onConfirm` the confirm
+ * button only closes the dialog (the original preview behaviour).
  */
 export default function ConfirmDialog({
   title,
@@ -28,8 +30,10 @@ export default function ConfirmDialog({
   confirmLabel = "Confirm",
   tone = "default",
   trigger,
+  onConfirm,
 }) {
   const [open, setOpen] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   const dialogRef = useRef(null);
   const returnFocusRef = useRef(null);
   const titleId = useId();
@@ -51,7 +55,31 @@ export default function ConfirmDialog({
 
   const openDialog = () => setOpen(true);
 
-  const closeDialog = () => setOpen(false);
+  const closeDialog = () => {
+    if (isConfirming) return;
+    setOpen(false);
+  };
+
+  // Runs the caller's work (if any), then closes. The caller surfaces its own
+  // failures (e.g. a toast), so the dialog still closes afterwards.
+  const handleConfirm = async () => {
+    if (isConfirming) return;
+
+    if (!onConfirm) {
+      closeDialog();
+      return;
+    }
+
+    setIsConfirming(true);
+    try {
+      await onConfirm();
+    } catch {
+      // Intentionally empty: the caller owns error reporting.
+    } finally {
+      setIsConfirming(false);
+      setOpen(false);
+    }
+  };
 
   const handleClose = () => {
     const target = returnFocusRef.current;
@@ -62,7 +90,13 @@ export default function ConfirmDialog({
 
   // Clicks on the ::backdrop are reported on the dialog element itself.
   const handleBackdropClick = (event) => {
+    if (isConfirming) return;
     if (event.target === dialogRef.current) closeDialog();
+  };
+
+  // Escape fires the native `cancel` event; ignore it while confirming.
+  const handleCancel = (event) => {
+    if (isConfirming) event.preventDefault();
   };
 
   let triggerNode = null;
@@ -90,6 +124,7 @@ export default function ConfirmDialog({
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
         onClose={handleClose}
+        onCancel={handleCancel}
         onClick={handleBackdropClick}
         className="m-auto w-[calc(100vw-2rem)] max-w-md rounded-modal border border-border bg-surface p-0 text-foreground shadow-lg backdrop:bg-ink/60"
       >
@@ -122,15 +157,17 @@ export default function ConfirmDialog({
               type="button"
               variant="ghost"
               onClick={closeDialog}
+              disabled={isConfirming}
               className="w-full sm:w-auto"
             >
               Cancel
             </Button>
-            {/* Wired by owner in manual phase M7. This button only closes the dialog. */}
             <Button
               type="button"
               variant={tone === "danger" ? "destructive" : "primary"}
-              onClick={closeDialog}
+              onClick={handleConfirm}
+              loading={isConfirming}
+              disabled={isConfirming}
               className="w-full sm:w-auto"
             >
               {confirmLabel}
