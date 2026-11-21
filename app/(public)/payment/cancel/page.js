@@ -1,4 +1,5 @@
-import PaymentCancelled from "@/components/system/PaymentCancelled";
+import { Suspense } from "react";
+import PaymentCancelClient from "@/components/system/PaymentCancelClient";
 
 export const metadata = {
   title: "Payment cancelled",
@@ -7,7 +8,9 @@ export const metadata = {
 };
 
 export default function PaymentCancelPage() {
-  // MOCK ONLY: this page only presents the cancelled outcome. Retrying the
-  // checkout is wired by the owner in M9.
-  return <PaymentCancelled />;
+  return (
+    <Suspense fallback={null}>
+      <PaymentCancelClient />
+    </Suspense>
+  );
 }

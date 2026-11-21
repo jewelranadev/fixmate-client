@@ -14,8 +14,8 @@ import { formatCurrency, formatDate } from "@/lib/format/display";
  *
  * Takes `bookings` as a prop (empty array previews the empty state) plus
  * `loading` / `error` flags for the skeleton and error presentations.
- * Cancel runs `onCancel` through the confirmation dialog; Pay Now has no
- * handler yet (Stripe is wired later).
+ * Cancel runs `onCancel` through the confirmation dialog; Pay Now runs
+ * `onPay` and shows a loading state while the checkout session is created.
  */
 
 function Price({ booking }) {
@@ -44,7 +44,7 @@ function Price({ booking }) {
   );
 }
 
-function BookingActions({ booking, onCancel }) {
+function BookingActions({ booking, onCancel, onPay, payingId }) {
   if (booking.status === "requested") {
     return (
       <ConfirmDialog
@@ -68,9 +68,16 @@ function BookingActions({ booking, onCancel }) {
   }
 
   if (booking.status === "completed" && booking.paymentStatus === "unpaid") {
+    const isPaying = payingId === booking._id;
     return (
-      // Wired by owner in manual phase M9 (Stripe Checkout).
-      <Button type="button" size="sm" className="min-h-11">
+      <Button
+        type="button"
+        size="sm"
+        className="min-h-11"
+        onClick={onPay ? () => onPay(booking._id) : undefined}
+        loading={isPaying}
+        disabled={!onPay || isPaying}
+      >
         Pay Now
       </Button>
     );
@@ -79,7 +86,7 @@ function BookingActions({ booking, onCancel }) {
   return null;
 }
 
-function BookingCard({ booking, onCancel }) {
+function BookingCard({ booking, onCancel, onPay, payingId }) {
   return (
     <div className="space-y-3">
       <div className="flex items-start gap-3">
@@ -127,7 +134,12 @@ function BookingCard({ booking, onCancel }) {
       </dl>
 
       <div className="flex min-h-11 items-center justify-end border-t border-border pt-3">
-        <BookingActions booking={booking} onCancel={onCancel} />
+        <BookingActions
+          booking={booking}
+          onCancel={onCancel}
+          onPay={onPay}
+          payingId={payingId}
+        />
       </div>
     </div>
   );
@@ -138,6 +150,8 @@ export default function BookingsSection({
   loading = false,
   error = false,
   onCancel,
+  onPay,
+  payingId = null,
 }) {
   if (error) {
     return (
@@ -227,13 +241,23 @@ export default function BookingsSection({
           className: "text-right",
           render: (booking) => (
             <div className="flex justify-end">
-              <BookingActions booking={booking} onCancel={onCancel} />
+              <BookingActions
+                booking={booking}
+                onCancel={onCancel}
+                onPay={onPay}
+                payingId={payingId}
+              />
             </div>
           ),
         },
       ]}
       renderCard={(booking) => (
-        <BookingCard booking={booking} onCancel={onCancel} />
+        <BookingCard
+          booking={booking}
+          onCancel={onCancel}
+          onPay={onPay}
+          payingId={payingId}
+        />
       )}
     />
   );

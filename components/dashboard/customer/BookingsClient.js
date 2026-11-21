@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
 import { useApiData } from "@/lib/use-api-data";
@@ -9,6 +10,7 @@ import RetryErrorState from "./RetryErrorState";
 export default function BookingsClient() {
   const { data, error, isLoading, reload } = useApiData("/api/bookings/my");
   const bookings = data?.bookings ?? [];
+  const [payingId, setPayingId] = useState(null);
 
   async function handleCancel(id) {
     try {
@@ -22,14 +24,19 @@ export default function BookingsClient() {
     }
   }
   async function handlePay(id) {
+    if (payingId) return; // one Checkout Session at a time
+    setPayingId(id);
+
     try {
       const { url } = await apiFetch("/api/payments/create-checkout-session", {
         method: "POST",
         body: { bookingId: id }, // only the id: the server reads the amount from the database
       });
-      window.location.href = url; // redirect to Stripe Checkout
+      if (!url) throw new Error("Stripe did not return a checkout URL");
+      window.location.assign(url); // redirect to Stripe Checkout
     } catch (err) {
       toast.error(err.message || "Could not start the payment");
+      setPayingId(null);
     }
   }
   if (error) {
@@ -47,6 +54,8 @@ export default function BookingsClient() {
       bookings={bookings}
       loading={isLoading}
       onCancel={handleCancel}
+      onPay={handlePay}
+      payingId={payingId}
     />
   );
 }

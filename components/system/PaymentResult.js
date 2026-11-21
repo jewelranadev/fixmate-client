@@ -5,10 +5,9 @@ import Container from "@/components/ui/Container";
 import { formatCurrency } from "@/lib/format/display";
 
 /**
- * PaymentResult — shared presentation for the three payment outcomes.
- * Purely visual: no Stripe call, no session_id handling and no verification.
- * The real page reads the checkout result and calls the protected verify
- * endpoint (owner, M9).
+ * PaymentResult — shared presentation for the payment outcomes.
+ * Purely visual: the success page verifies the session with the protected
+ * endpoint and passes the resulting state here.
  *
  * `headingLevel` defaults to h1 (the page's only heading) and is lowered for
  * the temporary design-preview page.

@@ -5,9 +5,14 @@ import Container from "@/components/ui/Container";
 
 /**
  * PaymentCancelled — friendly presentation for a checkout that the customer
- * closed before finishing. No Stripe call and no booking mutation happen here.
+ * closed before finishing. With `onRetry` the button starts a new Checkout
+ * Session; without it (design preview) it stays a simple link.
  */
-export default function PaymentCancelled({ headingLevel = "h1" }) {
+export default function PaymentCancelled({
+  headingLevel = "h1",
+  onRetry = null,
+  isRetrying = false,
+}) {
   const Heading = headingLevel;
 
   return (
@@ -31,7 +36,18 @@ export default function PaymentCancelled({ headingLevel = "h1" }) {
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Button href="/dashboard/customer/bookings">Try Again</Button>
+            {onRetry ? (
+              <Button
+                type="button"
+                onClick={onRetry}
+                loading={isRetrying}
+                disabled={isRetrying}
+              >
+                Try Again
+              </Button>
+            ) : (
+              <Button href="/dashboard/customer/bookings">Try Again</Button>
+            )}
             <Button
               href="/"
               variant="ghost"
