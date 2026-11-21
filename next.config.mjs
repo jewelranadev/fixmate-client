@@ -8,9 +8,19 @@ const nextConfig = {
     // "HMR hash mismatch" reload loop on Next 16.4.x.
     turbopackFileSystemCacheForDev: false,
   },
+
+  // Allow remote images from these hosts
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "i.ibb.co" },
+      { protocol: "https", hostname: "i.ibb.co.com" },
+    ],
+  },
+
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
+
   turbopack: {
     rules: {
       "*.css": {
