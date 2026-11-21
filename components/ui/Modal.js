@@ -12,14 +12,9 @@ import { X } from "lucide-react";
 import Button from "@/components/ui/Button";
 
 /**
- * Modal — native <dialog> + showModal() dialog panel with a scrollable body.
- *
- * This is the ONLY new client component in A09. It opens from `trigger`
- * (a button node or a render prop), and closes on Cancel, Escape and backdrop
- * click. Focus returns to whatever was focused when it opened.
- *
- * The confirm button only closes the dialog.
- * Wired by owner.
+ * Modal: native <dialog> with a scrollable body.
+ * onConfirm(dialogElement) may be async. Returning false (or throwing) keeps the
+ * modal open; anything else closes it. Without onConfirm the button only closes.
  */
 const SIZES = {
   md: "max-w-md",
@@ -35,15 +30,15 @@ export default function Modal({
   confirmLabel = "Save changes",
   tone = "default",
   size = "md",
+  onConfirm,
 }) {
   const [open, setOpen] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   const dialogRef = useRef(null);
   const returnFocusRef = useRef(null);
   const titleId = useId();
   const descriptionId = useId();
 
-  // Opening/closing is driven by state so the handlers never touch refs
-  // during render. showModal() moves focus into the dialog automatically.
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
@@ -58,7 +53,10 @@ export default function Modal({
 
   const openDialog = () => setOpen(true);
 
-  const closeDialog = () => setOpen(false);
+  const closeDialog = () => {
+    if (isConfirming) return;
+    setOpen(false);
+  };
 
   const handleClose = () => {
     const target = returnFocusRef.current;
@@ -67,8 +65,34 @@ export default function Modal({
     if (target && typeof target.focus === "function") target.focus();
   };
 
+  const handleConfirm = async () => {
+    if (isConfirming) return;
+    if (!onConfirm) {
+      setOpen(false);
+      return;
+    }
+
+    setIsConfirming(true);
+    let keepOpen = false;
+    try {
+      const result = await onConfirm(dialogRef.current);
+      keepOpen = result === false;
+    } catch {
+      keepOpen = true;
+    } finally {
+      setIsConfirming(false);
+    }
+    if (!keepOpen) setOpen(false);
+  };
+
+  // Escape fires the native "cancel" event: ignore it while saving.
+  const handleCancel = (event) => {
+    if (isConfirming) event.preventDefault();
+  };
+
   // Clicks on the ::backdrop are reported on the dialog element itself.
   const handleBackdropClick = (event) => {
+    if (isConfirming) return;
     if (event.target === dialogRef.current) closeDialog();
   };
 
@@ -97,6 +121,7 @@ export default function Modal({
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
         onClose={handleClose}
+        onCancel={handleCancel}
         onClick={handleBackdropClick}
         className={`m-auto w-[calc(100vw-2rem)] overflow-hidden rounded-modal border border-border bg-surface p-0 text-foreground shadow-lg backdrop:bg-ink/60 ${
           SIZES[size] || SIZES.md
@@ -120,6 +145,7 @@ export default function Modal({
             <button
               type="button"
               onClick={closeDialog}
+              disabled={isConfirming}
               aria-label="Close dialog"
               className="inline-flex size-11 shrink-0 items-center justify-center rounded-field text-muted transition-colors hover:bg-surface-soft hover:text-foreground"
             >
@@ -136,15 +162,17 @@ export default function Modal({
               type="button"
               variant="ghost"
               onClick={closeDialog}
+              disabled={isConfirming}
               className="w-full sm:w-auto"
             >
               {cancelLabel}
             </Button>
-            {/* Wired by owner. This button only closes the dialog. */}
             <Button
               type="button"
               variant={tone === "danger" ? "destructive" : "primary"}
-              onClick={closeDialog}
+              onClick={handleConfirm}
+              loading={isConfirming}
+              disabled={isConfirming}
               className="w-full sm:w-auto"
             >
               {confirmLabel}
