@@ -13,11 +13,12 @@ import { formatCurrency } from "@/lib/format/display";
 import ServiceFields from "./ServiceFields";
 
 /**
- * Technician MyServicesSection — presentational only.
+ * Technician MyServicesSection — read-only listing plus an Edit modal.
  *
- * Edit opens a Modal with the shared service fields (plain <div>, no form);
- * Delete opens a danger ConfirmDialog. Availability is a native-checkbox
- * Switch. Nothing is saved, deleted or toggled in code.
+ * Edit opens a Modal with the shared service fields and calls `onEdit` with
+ * the dialog element so the client can read values and save them. Image
+ * uploads are reported through `onImageUpload` / `onImageError`. Delete and
+ * availability stay presentational until separately wired.
  */
 
 function ServiceIdentity({ service, size = 40 }) {
@@ -41,7 +42,16 @@ function ServiceIdentity({ service, size = 40 }) {
   );
 }
 
-function ServiceActions({ service, technician, variant }) {
+function ServiceActions({
+  service,
+  technician,
+  variant,
+  onEdit = null,
+  imageUrl = "",
+  onImageUpload = null,
+  onImageError = null,
+  imageError = "",
+}) {
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
       <Modal
@@ -49,6 +59,7 @@ function ServiceActions({ service, technician, variant }) {
         description="Update the listing details. The image is replaced only when you choose a new file."
         confirmLabel="Save changes"
         size="lg"
+        onConfirm={onEdit ? (dialog) => onEdit(service, dialog) : undefined}
         trigger={
           <Button
             type="button"
@@ -70,6 +81,10 @@ function ServiceActions({ service, technician, variant }) {
             idPrefix={`edit-${variant}-${service._id}`}
             service={service}
             technician={technician}
+            imageUrl={imageUrl}
+            onImageUpload={onImageUpload}
+            onImageError={onImageError}
+            imageError={imageError}
           />
           <p className="text-sm text-muted">
             An admin reviews the updated listing before it appears publicly
@@ -111,7 +126,15 @@ function Availability({ service, variant }) {
   );
 }
 
-function ServiceCard({ service, technician }) {
+function ServiceCard({
+  service,
+  technician,
+  onEdit,
+  imageUrl,
+  onImageUpload,
+  onImageError,
+  imageError,
+}) {
   return (
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
@@ -145,6 +168,11 @@ function ServiceCard({ service, technician }) {
           service={service}
           technician={technician}
           variant="card"
+          onEdit={onEdit}
+          imageUrl={imageUrl}
+          onImageUpload={onImageUpload}
+          onImageError={onImageError}
+          imageError={imageError}
         />
       </div>
     </div>
@@ -156,6 +184,11 @@ export default function MyServicesSection({
   technician,
   loading = false,
   error = false,
+  onEdit = null,
+  editImages = {},
+  editErrors = {},
+  onImageUpload = null,
+  onImageError = null,
 }) {
   if (error) {
     return (
@@ -233,12 +266,39 @@ export default function MyServicesSection({
               service={service}
               technician={technician}
               variant="table"
+              onEdit={onEdit}
+              imageUrl={editImages[service._id] || service.image}
+              onImageUpload={
+                onImageUpload
+                  ? (url) => onImageUpload(service._id, url)
+                  : undefined
+              }
+              onImageError={
+                onImageError
+                  ? (message) => onImageError(service._id, message)
+                  : undefined
+              }
+              imageError={editErrors[service._id]}
             />
           ),
         },
       ]}
       renderCard={(service) => (
-        <ServiceCard service={service} technician={technician} />
+        <ServiceCard
+          service={service}
+          technician={technician}
+          onEdit={onEdit}
+          imageUrl={editImages[service._id] || service.image}
+          onImageUpload={
+            onImageUpload ? (url) => onImageUpload(service._id, url) : undefined
+          }
+          onImageError={
+            onImageError
+              ? (message) => onImageError(service._id, message)
+              : undefined
+          }
+          imageError={editErrors[service._id]}
+        />
       )}
     />
   );

@@ -11,8 +11,9 @@ import { CATEGORIES, SERVICE_MODES } from "@/lib/constants";
  * supplies a unique `idPrefix` so repeated instances (add form + one per
  * editable row) never collide on element ids.
  *
- * Pass `service` to pre-fill from an existing row. The file input cannot be
- * pre-filled; the current image path is shown above it instead.
+ * Pass `service` to pre-fill from an existing row. The image picker is wired
+ * through `onImageUpload`; the hosted URL is shown as a preview and saved by
+ * the caller with the service API.
  */
 export default function ServiceFields({
   idPrefix,
@@ -20,6 +21,10 @@ export default function ServiceFields({
   technician,
   errors = {},
   disabled = false,
+  imageUrl = "",
+  onImageUpload = null,
+  onImageError = null,
+  imageError = "",
 }) {
   const describedBy = (name, helper = false) => {
     if (errors[name]) return `${idPrefix}-${name}-error`;
@@ -184,12 +189,15 @@ export default function ServiceFields({
             <span className="font-medium text-foreground">{service.image}</span>
           </p>
         )}
-        <FileInput id={`${idPrefix}-image`} name="image" />
-        {errors.image && (
-          <p id={`${idPrefix}-image-error`} className="text-xs text-danger">
-            {errors.image}
-          </p>
-        )}
+        <FileInput
+          id={`${idPrefix}-image`}
+          name="imageFile"
+          previewUrl={imageUrl}
+          onUpload={onImageUpload}
+          onError={onImageError}
+          error={imageError || errors.image}
+          disabled={disabled}
+        />
       </div>
 
       <Field

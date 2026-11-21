@@ -7,10 +7,9 @@ import ServiceFields from "./ServiceFields";
  * AddServiceSection — presentation only.
  *
  * The form never submits natively: the first submit button is a permanently
- * disabled sr-only default button, and the visible action is type="button"
- * with no handler. Errors / success / loading are all prop-driven.
- *
- * Wired by owner in M3 (service creation, ImgBB upload, toast).
+ * disabled sr-only default button, and the visible action calls `onSubmit`
+ * with the click event so the client can read the form values. Upload,
+ * errors, success and loading are all prop-driven.
  */
 export default function AddServiceSection({
   technician,
@@ -19,6 +18,11 @@ export default function AddServiceSection({
   message = "",
   isSubmitting = false,
   className = "",
+  imageUrl = "",
+  onImageUpload = null,
+  onImageError = null,
+  imageError = "",
+  onSubmit = null,
 }) {
   // Unique ids keep repeated preview instances (idle / error / success /
   // submitting) from colliding on the temporary design-preview page.
@@ -63,6 +67,10 @@ export default function AddServiceSection({
           technician={technician}
           errors={errors}
           disabled={isSubmitting}
+          imageUrl={imageUrl}
+          onImageUpload={onImageUpload}
+          onImageError={onImageError}
+          imageError={imageError}
         />
 
         <p className="text-sm text-muted">
@@ -70,9 +78,9 @@ export default function AddServiceSection({
         </p>
 
         <div className="flex justify-end">
-          {/* Wired by owner in M3 (service creation, ImgBB upload, toast). */}
           <Button
             type="button"
+            onClick={onSubmit ? (event) => onSubmit(event) : undefined}
             loading={isSubmitting}
             className="w-full sm:w-auto"
           >
