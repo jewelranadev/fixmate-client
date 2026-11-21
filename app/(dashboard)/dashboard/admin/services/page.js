@@ -1,23 +1,22 @@
+import { Suspense } from "react";
 import PageHeader from "@/components/dashboard/PageHeader";
-import ServicesSection from "@/components/dashboard/admin/ServicesSection";
-import { allServices } from "@/data/mock/adminData";
+import ServicesClient from "@/components/dashboard/admin/ServicesClient";
 
 export const metadata = {
-  title: "Admin Services",
-  description:
-    "Moderation queue for service listings, with pending submissions shown first.",
+  title: "Service Approval",
 };
 
 export default function AdminServicesPage() {
-  // MOCK ONLY: replaced by the service queue from the API. Pending rows are
-  // ordered first in the section; the filter is visual only.
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6">
       <PageHeader
-        title="Services"
-        description="Approve or reject submitted listings. Pending items are shown first so nothing waits in the queue."
+        title="Service approval"
+        description="Review listings. Pending services are shown first."
       />
-      <ServicesSection services={allServices} />
+
+      <Suspense fallback={null}>
+        <ServicesClient />
+      </Suspense>
     </div>
   );
 }

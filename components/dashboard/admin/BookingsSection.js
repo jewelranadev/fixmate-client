@@ -11,7 +11,7 @@ import PaymentStatus from "@/components/dashboard/PaymentStatus";
 import ResponsiveDataList from "@/components/dashboard/ResponsiveDataList";
 import { formatCurrency, formatDate } from "@/lib/format/display";
 
-/**
+/** 
  * Admin BookingsSection — read-only marketplace view.
  *
  * The status filter is a plain GET form; the UI never reads searchParams and

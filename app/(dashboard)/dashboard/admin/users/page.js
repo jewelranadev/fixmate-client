@@ -1,22 +1,22 @@
+import { Suspense } from "react";
 import PageHeader from "@/components/dashboard/PageHeader";
-import UsersSection from "@/components/dashboard/admin/UsersSection";
-import { adminUsers, currentAdmin } from "@/data/mock/adminUsers";
+import UsersClient from "@/components/dashboard/admin/UsersClient";
 
 export const metadata = {
-  title: "Admin Users",
-  description:
-    "Customer, technician and admin accounts with role management controls.",
+  title: "Manage Users",
 };
 
 export default function AdminUsersPage() {
-  // MOCK ONLY: replaced by the user directory from the API.
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Users"
-        description="Every registered account. Roles can be adjusted here; your own role is locked."
+        description="View every account and change user roles."
       />
-      <UsersSection users={adminUsers} currentUserId={currentAdmin._id} />
+
+      <Suspense fallback={null}>
+        <UsersClient />
+      </Suspense>
     </div>
   );
 }

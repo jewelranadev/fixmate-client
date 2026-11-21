@@ -1,23 +1,22 @@
+import { Suspense } from "react";
 import PageHeader from "@/components/dashboard/PageHeader";
-import TransactionsSection from "@/components/dashboard/admin/TransactionsSection";
-import { allPayments } from "@/data/mock/adminData";
+import TransactionsClient from "@/components/dashboard/admin/TransactionsClient";
 
 export const metadata = {
-  title: "Admin Transactions",
-  description:
-    "Paid bookings with Stripe references and the mock total revenue figure.",
+  title: "Transactions",
 };
 
 export default function AdminTransactionsPage() {
-  // MOCK ONLY: replaced by the payment log from the API. Revenue is summed
-  // from the mock rows inside the section.
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Transactions"
-        description="Payments collected through Stripe, newest first, with the reference for each charge."
+        description="Every payment received through Stripe."
       />
-      <TransactionsSection payments={allPayments} />
+
+      <Suspense fallback={null}>
+        <TransactionsClient />
+      </Suspense>
     </div>
   );
 }

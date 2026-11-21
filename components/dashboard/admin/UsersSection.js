@@ -15,7 +15,7 @@ import { formatDate } from "@/lib/format/display";
  * patched; the select is disabled on the signed-in admin's own row.
  * Wired by owner in M12: PATCH /api/admin/users/:id/role.
  */
-function RoleControl({ user, currentUserId, variant }) {
+function RoleControl({ user, currentUserId, variant, onChangeRole }) {
   const isSelf = user._id === currentUserId;
   const selectId = `role-${variant}-${user._id}`;
   const helperId = `role-${variant}-${user._id}-helper`;
@@ -43,6 +43,15 @@ function RoleControl({ user, currentUserId, variant }) {
           variant="ghost"
           disabled={isSelf}
           className="min-h-11 shrink-0 border border-border-strong"
+          onClick={
+            onChangeRole
+              ? () =>
+                  onChangeRole(
+                    user._id,
+                    document.getElementById(selectId)?.value,
+                  )
+              : undefined
+          }
         >
           Save
         </Button>
@@ -89,7 +98,7 @@ function Joined({ user }) {
   );
 }
 
-function UserCard({ user, currentUserId }) {
+function UserCard({ user, currentUserId, onChangeRole }) {
   return (
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
@@ -114,11 +123,7 @@ function UserCard({ user, currentUserId }) {
 
       <div className="border-t border-border pt-3">
         <p className="mb-1.5 text-xs font-medium text-muted">Change role</p>
-        <RoleControl
-          user={user}
-          currentUserId={currentUserId}
-          variant="card"
-        />
+        <RoleControl user={user} currentUserId={currentUserId} variant="card" onChangeRole={onChangeRole} />
       </div>
     </div>
   );
@@ -129,6 +134,7 @@ export default function UsersSection({
   currentUserId = null,
   loading = false,
   error = false,
+  onChangeRole,
 }) {
   if (error) {
     return (
@@ -139,57 +145,62 @@ export default function UsersSection({
     );
   }
 
-  return (
-    <ResponsiveDataList
-      label="Users"
-      loading={loading}
-      rows={users}
-      rowKey={(user) => user._id}
-      minWidthClass="min-w-[1000px]"
-      skeletonRows={6}
-      empty={
-        <EmptyState
-          icon={UsersIcon}
-          title="No users found"
-          description="Registered customers, technicians and admins will appear here once accounts exist."
-        />
-      }
-      columns={[
-        {
-          key: "user",
-          header: "User",
-          render: (user) => <UserIdentity user={user} />,
-        },
-        {
-          key: "email",
-          header: "Email",
-          render: (user) => <Email user={user} />,
-        },
-        {
-          key: "role",
-          header: "Role",
-          render: (user) => <RoleBadge role={user.role} />,
-        },
-        {
-          key: "createdAt",
-          header: "Joined",
-          render: (user) => <Joined user={user} />,
-        },
-        {
-          key: "actions",
-          header: "Change role",
-          render: (user) => (
-            <RoleControl
-              user={user}
-              currentUserId={currentUserId}
-              variant="table"
-            />
-          ),
-        },
-      ]}
-      renderCard={(user) => (
-        <UserCard user={user} currentUserId={currentUserId} />
-      )}
-    />
-  );
+ return (
+  <ResponsiveDataList
+    label="Users"
+    loading={loading}
+    rows={users}
+    rowKey={(user) => user._id}
+    minWidthClass="min-w-[1000px]"
+    skeletonRows={6}
+    empty={
+      <EmptyState
+        icon={UsersIcon}
+        title="No users found"
+        description="Registered customers, technicians and admins will appear here once accounts exist."
+      />
+    }
+    columns={[
+      {
+        key: "user",
+        header: "User",
+        render: (user) => <UserIdentity user={user} />,
+      },
+      {
+        key: "email",
+        header: "Email",
+        render: (user) => <Email user={user} />,
+      },
+      {
+        key: "role",
+        header: "Role",
+        render: (user) => <RoleBadge role={user.role} />,
+      },
+      {
+        key: "createdAt",
+        header: "Joined",
+        render: (user) => <Joined user={user} />,
+      },
+      {
+        key: "actions",
+        header: "Change role",
+        render: (user) => (
+          <RoleControl
+            user={user}
+            currentUserId={currentUserId}
+            variant="table"
+            onChangeRole={onChangeRole}
+          />
+        ),
+      },
+    ]}
+    renderCard={(user) => (
+      <UserCard
+        user={user}
+        currentUserId={currentUserId}
+        onChangeRole={onChangeRole}
+      />
+    )}
+  />
+);
 }

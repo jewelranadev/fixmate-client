@@ -85,7 +85,7 @@ function Availability({ service }) {
   );
 }
 
-function ServiceActions({ service, variant }) {
+function ServiceActions({ service, variant, onDecision }) {
   const canApprove =
     service.approvalStatus === "pending" ||
     service.approvalStatus === "rejected";
@@ -99,7 +99,13 @@ function ServiceActions({ service, variant }) {
     <div className="flex flex-wrap items-center justify-end gap-2">
       {canApprove && (
         // Wired by owner in M4/M12 (approval endpoint).
-        <Button type="button" size="sm" className="min-h-11">
+        <Button type="button" size="sm" 
+        className="min-h-11" 
+        onClick={() => onDecision?.(service._id, "approved")
+
+
+        }
+         >
           <Check className="size-3.5" aria-hidden="true" />
           Approve
         </Button>
@@ -109,7 +115,8 @@ function ServiceActions({ service, variant }) {
           title="Reject this service?"
           description={`"${service.title}" by ${service.technicianName} will be rejected and hidden from the public listing. The technician can edit and resubmit it.`}
           confirmLabel="Reject service"
-          tone="danger"
+          tone="danger" 
+          onConfirm={onDecision ? () => onDecision(service._id, "rejected") : undefined}
           trigger={
             <Button
               type="button"
@@ -127,7 +134,7 @@ function ServiceActions({ service, variant }) {
   );
 }
 
-function ServiceCard({ service }) {
+function ServiceCard({ service, onDecision}) {
   return (
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
@@ -172,7 +179,7 @@ function ServiceCard({ service }) {
       </dl>
 
       <div className="flex flex-wrap items-center justify-end border-t border-border pt-3">
-        <ServiceActions service={service} variant="card" />
+        <ServiceActions service={service} variant="card" onDecision={onDecision} />
       </div>
     </div>
   );
@@ -184,7 +191,7 @@ export default function ServicesSection({
   loading = false,
   error = false,
   // Unique id prefix: repeated preview instances must not collide.
-  idPrefix = "admin-service",
+  idPrefix = "admin-service", onDecision
 }) {
   if (error) {
     return (
@@ -314,11 +321,11 @@ export default function ServicesSection({
             headerClassName: "text-right",
             className: "text-right",
             render: (service) => (
-              <ServiceActions service={service} variant="table" />
+            <ServiceActions service={service} variant="table" onDecision={onDecision} />
             ),
           },
         ]}
-        renderCard={(service) => <ServiceCard service={service} />}
+       renderCard={(service) => <ServiceCard service={service} onDecision={onDecision} />}
       />
     </div>
   );
