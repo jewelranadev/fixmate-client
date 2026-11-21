@@ -32,12 +32,16 @@ const FILTER_OPTIONS = [
   { value: "completed", label: "Completed" },
 ];
 
-function RequestActions({ request, variant }) {
+function RequestActions({ request, variant, onStatus }) {
   if (request.status === "requested") {
     return (
       <div className="flex flex-wrap items-center justify-end gap-2">
-        {/* Wired by owner in M8. */}
-        <Button type="button" size="sm" className="min-h-11">
+        <Button
+          type="button"
+          size="sm"
+          className="min-h-11"
+          onClick={onStatus ? () => onStatus(request._id, "accepted") : undefined}
+        >
           Accept
         </Button>
         <ConfirmDialog
@@ -45,6 +49,7 @@ function RequestActions({ request, variant }) {
           description={`This rejects ${request.customerName}'s request for ${request.serviceTitle}. The customer will be notified.`}
           confirmLabel="Reject request"
           tone="danger"
+          onConfirm={onStatus ? () => onStatus(request._id, "rejected") : undefined}
           trigger={
             <Button
               type="button"
@@ -62,8 +67,12 @@ function RequestActions({ request, variant }) {
 
   if (request.status === "accepted") {
     return (
-      // Wired by owner in M8.
-      <Button type="button" size="sm" className="min-h-11">
+      <Button
+        type="button"
+        size="sm"
+        className="min-h-11"
+        onClick={onStatus ? () => onStatus(request._id, "in-progress") : undefined}
+      >
         Start Work
       </Button>
     );
@@ -76,6 +85,16 @@ function RequestActions({ request, variant }) {
         description={`${request.customerName} · ${request.serviceTitle}`}
         confirmLabel="Mark as completed"
         size="md"
+        onConfirm={
+          onStatus
+            ? (dialog) =>
+                onStatus(
+                  request._id,
+                  "completed",
+                  dialog?.querySelector('input[name="finalAmount"]')?.value
+                )
+            : undefined
+        }
         trigger={
           <Button type="button" size="sm" className="min-h-11">
             Mark Completed
@@ -140,7 +159,7 @@ function Contact({ request }) {
   );
 }
 
-function RequestCard({ request }) {
+function RequestCard({ request, onStatus }) {
   return (
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
@@ -183,7 +202,7 @@ function RequestCard({ request }) {
       </div>
 
       <div className="flex flex-wrap items-center justify-end gap-2 border-t border-border pt-3">
-        <RequestActions request={request} variant="card" />
+        <RequestActions request={request} variant="card" onStatus={onStatus} />
       </div>
     </div>
   );
@@ -194,8 +213,8 @@ export default function RequestsSection({
   defaultStatus = "all",
   loading = false,
   error = false,
-  // Unique id prefix: repeated preview instances must not collide.
   idPrefix = "request",
+  onStatus,
 }) {
   if (error) {
     return (
@@ -322,12 +341,12 @@ export default function RequestsSection({
             className: "text-right",
             render: (request) => (
               <div className="flex justify-end">
-                <RequestActions request={request} variant="table" />
+                <RequestActions request={request} variant="table" onStatus={onStatus} />
               </div>
             ),
           },
         ]}
-        renderCard={(request) => <RequestCard request={request} />}
+        renderCard={(request) => <RequestCard request={request} onStatus={onStatus} />}
       />
     </div>
   );
