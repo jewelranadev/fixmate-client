@@ -14,10 +14,9 @@ import { formatCurrency, formatDate } from "@/lib/format/display";
 /** 
  * Admin BookingsSection — read-only marketplace view.
  *
- * The status filter is a plain GET form; the UI never reads searchParams and
- * never filters the array. There are deliberately no row actions.
- *
- * Wired by owner in M12: server-side filtering.
+ * The status filter is a plain GET form; the section never reads searchParams
+ * and never filters the array — GET /api/admin/bookings?status=... does that.
+ * There are deliberately no row actions.
  */
 const FILTER_OPTIONS = [
   { value: "all", label: "All" },
@@ -151,8 +150,7 @@ export default function BookingsSection({
   return (
     <div className="space-y-6">
       <Card className="p-4 sm:p-5">
-        {/* Wired by owner in M12: server-side filtering. This UI never reads
-            searchParams; the form is a plain GET submission. */}
+        {/* Plain GET form; filtering happens on the server via ?status=. */}
         <form
           method="get"
           action="/dashboard/admin/bookings"

@@ -11,9 +11,9 @@ import { formatDate } from "@/lib/format/display";
 /**
  * Admin UsersSection — presentational only.
  *
- * The role control is a plain <select> + type="button" Save. Nothing is
- * patched; the select is disabled on the signed-in admin's own row.
- * Wired by owner in M12: PATCH /api/admin/users/:id/role.
+ * The role control is a plain <select> + type="button" Save. The select is
+ * disabled on the signed-in admin's own row; saving calls
+ * PATCH /api/admin/users/:id/role through UsersClient.
  */
 function RoleControl({ user, currentUserId, variant, onChangeRole }) {
   const isSelf = user._id === currentUserId;
@@ -36,7 +36,7 @@ function RoleControl({ user, currentUserId, variant, onChangeRole }) {
           <option value="technician">Technician</option>
           <option value="admin">Admin</option>
         </Select>
-        {/* Wired by owner in M12: PATCH /api/admin/users/:id/role. */}
+        {/* Saves through PATCH /api/admin/users/:id/role. */}
         <Button
           type="button"
           size="sm"
