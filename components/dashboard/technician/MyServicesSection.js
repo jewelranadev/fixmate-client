@@ -13,12 +13,9 @@ import { formatCurrency } from "@/lib/format/display";
 import ServiceFields from "./ServiceFields";
 
 /**
- * Technician MyServicesSection — read-only listing plus an Edit modal.
- *
- * Edit opens a Modal with the shared service fields and calls `onEdit` with
- * the dialog element so the client can read values and save them. Image
- * uploads are reported through `onImageUpload` / `onImageError`. Delete and
- * availability stay presentational until separately wired.
+ * Technician MyServicesSection — service list with Edit, Delete and
+ * availability actions. Every mutation is delegated to a callback; ownership
+ * and authorization remain server-side in /api/services/:id.
  */
 
 function ServiceIdentity({ service, size = 40 }) {
@@ -42,16 +39,35 @@ function ServiceIdentity({ service, size = 40 }) {
   );
 }
 
-function ServiceActions({
-  service,
-  technician,
-  variant,
-  onEdit = null,
-  imageUrl = "",
-  onImageUpload = null,
-  onImageError = null,
-  imageError = "",
-}) {
+function Availability({ service, variant, actions }) {
+  const id = String(service._id);
+  const canToggle = typeof actions.onAvailabilityChange === "function";
+  const pending = Boolean(actions.busyIds[id]);
+  const checked = actions.availability[id] ?? service.isAvailable;
+
+  return (
+    <Switch
+      id={`availability-${variant}-${service._id}`}
+      name="isAvailable"
+      label={pending ? "Saving…" : "Available"}
+      ariaLabel={`Available: ${service.title}`}
+      checked={canToggle ? checked : undefined}
+      defaultChecked={canToggle ? undefined : service.isAvailable}
+      onChange={
+        canToggle
+          ? (event) => actions.onAvailabilityChange(service, event.target.checked)
+          : undefined
+      }
+      disabled={pending}
+    />
+  );
+}
+
+function ServiceActions({ service, technician, variant, actions }) {
+  const id = String(service._id);
+  const busy = Boolean(actions.busyIds[id]);
+  const saving = actions.busyIds[id] === "edit";
+
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
       <Modal
@@ -59,12 +75,13 @@ function ServiceActions({
         description="Update the listing details. The image is replaced only when you choose a new file."
         confirmLabel="Save changes"
         size="lg"
-        onConfirm={onEdit ? (dialog) => onEdit(service, dialog) : undefined}
+        onConfirm={actions.onEdit ? (dialog) => actions.onEdit(service, dialog) : undefined}
         trigger={
           <Button
             type="button"
             size="sm"
             variant="ghost"
+            disabled={busy}
             className="min-h-11 border border-border-strong"
           >
             <Pencil className="size-3.5" aria-hidden="true" />
@@ -81,10 +98,20 @@ function ServiceActions({
             idPrefix={`edit-${variant}-${service._id}`}
             service={service}
             technician={technician}
-            imageUrl={imageUrl}
-            onImageUpload={onImageUpload}
-            onImageError={onImageError}
-            imageError={imageError}
+            errors={actions.formErrors[id] || {}}
+            disabled={saving}
+            imageUrl={actions.editImages[id] || service.image}
+            onImageUpload={
+              actions.onImageUpload
+                ? (url) => actions.onImageUpload(service._id, url)
+                : undefined
+            }
+            onImageError={
+              actions.onImageError
+                ? (message) => actions.onImageError(service._id, message)
+                : undefined
+            }
+            imageError={actions.imageErrors[id]}
           />
           <p className="text-sm text-muted">
             An admin reviews the updated listing before it appears publicly
@@ -98,11 +125,13 @@ function ServiceActions({
         description={`"${service.title}" will be removed from your listings. Requests already booked are not affected.`}
         confirmLabel="Delete service"
         tone="danger"
+        onConfirm={actions.onDelete ? () => actions.onDelete(service) : undefined}
         trigger={
           <Button
             type="button"
             size="sm"
             variant="ghost"
+            disabled={busy}
             className="min-h-11 border border-danger/40 text-danger hover:bg-danger-soft"
           >
             <Trash2 className="size-3.5" aria-hidden="true" />
@@ -114,27 +143,7 @@ function ServiceActions({
   );
 }
 
-function Availability({ service, variant }) {
-  return (
-    <Switch
-      id={`availability-${variant}-${service._id}`}
-      name="isAvailable"
-      label="Available"
-      ariaLabel={`Available: ${service.title}`}
-      defaultChecked={service.isAvailable}
-    />
-  );
-}
-
-function ServiceCard({
-  service,
-  technician,
-  onEdit,
-  imageUrl,
-  onImageUpload,
-  onImageError,
-  imageError,
-}) {
+function ServiceCard({ service, technician, actions }) {
   return (
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
@@ -158,7 +167,7 @@ function ServiceCard({
         <div className="col-span-2">
           <dt className="sr-only">Availability</dt>
           <dd>
-            <Availability service={service} variant="card" />
+            <Availability service={service} variant="card" actions={actions} />
           </dd>
         </div>
       </dl>
@@ -168,11 +177,7 @@ function ServiceCard({
           service={service}
           technician={technician}
           variant="card"
-          onEdit={onEdit}
-          imageUrl={imageUrl}
-          onImageUpload={onImageUpload}
-          onImageError={onImageError}
-          imageError={imageError}
+          actions={actions}
         />
       </div>
     </div>
@@ -185,11 +190,29 @@ export default function MyServicesSection({
   loading = false,
   error = false,
   onEdit = null,
+  onDelete = null,
+  onAvailabilityChange = null,
   editImages = {},
-  editErrors = {},
+  imageErrors = {},
+  formErrors = {},
+  availability = {},
+  busyIds = {},
   onImageUpload = null,
   onImageError = null,
 }) {
+  const actions = {
+    onEdit,
+    onDelete,
+    onAvailabilityChange,
+    editImages,
+    imageErrors,
+    formErrors,
+    availability,
+    busyIds,
+    onImageUpload,
+    onImageError,
+  };
+
   if (error) {
     return (
       <ErrorState
@@ -253,7 +276,7 @@ export default function MyServicesSection({
           key: "isAvailable",
           header: "Availability",
           render: (service) => (
-            <Availability service={service} variant="table" />
+            <Availability service={service} variant="table" actions={actions} />
           ),
         },
         {
@@ -266,39 +289,13 @@ export default function MyServicesSection({
               service={service}
               technician={technician}
               variant="table"
-              onEdit={onEdit}
-              imageUrl={editImages[service._id] || service.image}
-              onImageUpload={
-                onImageUpload
-                  ? (url) => onImageUpload(service._id, url)
-                  : undefined
-              }
-              onImageError={
-                onImageError
-                  ? (message) => onImageError(service._id, message)
-                  : undefined
-              }
-              imageError={editErrors[service._id]}
+              actions={actions}
             />
           ),
         },
       ]}
       renderCard={(service) => (
-        <ServiceCard
-          service={service}
-          technician={technician}
-          onEdit={onEdit}
-          imageUrl={editImages[service._id] || service.image}
-          onImageUpload={
-            onImageUpload ? (url) => onImageUpload(service._id, url) : undefined
-          }
-          onImageError={
-            onImageError
-              ? (message) => onImageError(service._id, message)
-              : undefined
-          }
-          imageError={editErrors[service._id]}
-        />
+        <ServiceCard service={service} technician={technician} actions={actions} />
       )}
     />
   );

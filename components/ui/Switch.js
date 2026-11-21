@@ -1,6 +1,7 @@
 /**
  * Switch — accessible on/off control built on a native checkbox.
- * Visual only; persistence wired by owner in M3.
+ * Supports an uncontrolled `defaultChecked` (design preview) and a controlled
+ * `checked` + `onChange` pair; persistence is owned by the caller.
  *
  * The native input keeps keyboard/AT semantics (`role="switch"`,
  * space toggles, checked state) while the track + thumb are pure CSS.
@@ -11,10 +12,15 @@ export default function Switch({
   name,
   label = "Available",
   ariaLabel,
+  checked,
   defaultChecked = false,
+  onChange,
+  readOnly = false,
   disabled = false,
   className = "",
 }) {
+  const isControlled = checked !== undefined;
+
   return (
     <label
       className={`flex min-h-11 cursor-pointer select-none items-center gap-3 ${
@@ -27,7 +33,10 @@ export default function Switch({
           name={name}
           type="checkbox"
           role="switch"
-          defaultChecked={defaultChecked}
+          checked={isControlled ? checked : undefined}
+          defaultChecked={isControlled ? undefined : defaultChecked}
+          onChange={onChange}
+          readOnly={isControlled && !onChange ? true : readOnly}
           disabled={disabled}
           aria-label={ariaLabel}
           className="peer sr-only"
