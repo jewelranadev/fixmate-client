@@ -61,6 +61,11 @@ export default function ProfileSection({
   isSubmitting = false,
   // Unique id prefix: repeated preview instances must not collide.
   idPrefix = "profile",
+  imageUrl = "",
+  imageError = "",
+  onImageUpload = null,
+  onImageError = null,
+  onSubmit = null,
 }) {
   const roleLabel = ROLE_LABELS[user.role] || user.role;
   const isTechnician = user.role === "technician";
@@ -252,12 +257,12 @@ export default function ProfileSection({
                 name="image"
                 label="Profile photo"
                 hint="PNG or JPG, max 2 MB"
+                previewUrl={imageUrl || user.image || ""}
+                onUpload={onImageUpload}
+                onError={onImageError}
+                error={imageError || errors.image || ""}
+                disabled={isSubmitting}
               />
-              {errors.image && (
-                <p id={`${idPrefix}-image-error`} className="text-xs text-danger">
-                  {errors.image}
-                </p>
-              )}
             </div>
           </div>
 
@@ -265,12 +270,12 @@ export default function ProfileSection({
             <p className="text-xs text-muted">
               Your email and role are managed by FixMate support.
             </p>
-            {/* Wired by owner in M11 (ImgBB upload, PATCH /api/users/profile,
-                refresh navbar/topbar without logout). */}
             <Button
               type="button"
               loading={isSubmitting}
+              disabled={isSubmitting}
               className="w-full sm:w-auto"
+              onClick={onSubmit}
             >
               {isSubmitting ? "Saving…" : "Save changes"}
             </Button>

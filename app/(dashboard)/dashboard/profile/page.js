@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import PageHeader from "@/components/dashboard/PageHeader";
-import ProfileSection from "@/components/dashboard/ProfileSection";
+import ProfileClient from "@/components/dashboard/ProfileClient";
 import { auth } from "@/lib/auth";
 
 export const metadata = {
@@ -39,7 +39,7 @@ export default async function ProfilePage() {
         title="Profile settings"
         description="Keep your contact details current so bookings and updates reach the right person."
       />
-      <ProfileSection user={user} />
+      <ProfileClient initialUser={user} />
     </div>
   );
 }
