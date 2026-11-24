@@ -15,8 +15,9 @@ import { formatDate } from "@/lib/format/display";
  * disabled on the signed-in admin's own row; saving calls
  * PATCH /api/admin/users/:id/role through UsersClient.
  */
-function RoleControl({ user, currentUserId, variant, onChangeRole }) {
+function RoleControl({ user, currentUserId, variant, onChangeRole, savingIds }) {
   const isSelf = user._id === currentUserId;
+  const isSaving = Boolean(savingIds?.[String(user._id)]);
   const selectId = `role-${variant}-${user._id}`;
   const helperId = `role-${variant}-${user._id}-helper`;
 
@@ -27,7 +28,7 @@ function RoleControl({ user, currentUserId, variant, onChangeRole }) {
           id={selectId}
           name="role"
           defaultValue={user.role}
-          disabled={isSelf}
+          disabled={isSelf || isSaving}
           aria-label={`Role for ${user.name}`}
           aria-describedby={isSelf ? helperId : undefined}
           className="w-full min-w-32"
@@ -41,7 +42,8 @@ function RoleControl({ user, currentUserId, variant, onChangeRole }) {
           type="button"
           size="sm"
           variant="ghost"
-          disabled={isSelf}
+          disabled={isSelf || isSaving}
+          loading={isSaving}
           className="min-h-11 shrink-0 border border-border-strong"
           onClick={
             onChangeRole
@@ -98,7 +100,7 @@ function Joined({ user }) {
   );
 }
 
-function UserCard({ user, currentUserId, onChangeRole }) {
+function UserCard({ user, currentUserId, onChangeRole, savingIds }) {
   return (
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
@@ -123,7 +125,13 @@ function UserCard({ user, currentUserId, onChangeRole }) {
 
       <div className="border-t border-border pt-3">
         <p className="mb-1.5 text-xs font-medium text-muted">Change role</p>
-        <RoleControl user={user} currentUserId={currentUserId} variant="card" onChangeRole={onChangeRole} />
+        <RoleControl
+          user={user}
+          currentUserId={currentUserId}
+          variant="card"
+          onChangeRole={onChangeRole}
+          savingIds={savingIds}
+        />
       </div>
     </div>
   );
@@ -134,6 +142,7 @@ export default function UsersSection({
   currentUserId = null,
   loading = false,
   error = false,
+  savingIds = {},
   onChangeRole,
 }) {
   if (error) {
@@ -190,6 +199,7 @@ export default function UsersSection({
             currentUserId={currentUserId}
             variant="table"
             onChangeRole={onChangeRole}
+            savingIds={savingIds}
           />
         ),
       },
@@ -199,6 +209,7 @@ export default function UsersSection({
         user={user}
         currentUserId={currentUserId}
         onChangeRole={onChangeRole}
+        savingIds={savingIds}
       />
     )}
   />

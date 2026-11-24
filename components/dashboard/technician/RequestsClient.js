@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
@@ -23,9 +24,13 @@ export default function RequestsClient() {
       : `/api/bookings/technician?status=${encodeURIComponent(status)}`;
 
   const { data, error, isLoading, reload } = useApiData(path);
+  const [busyIds, setBusyIds] = useState({});
 
   // Returns true/false: the Modal stays open when false
   async function changeStatus(id, next, finalAmount) {
+    const key = String(id);
+    if (busyIds[key]) return false;
+
     const body = { status: next };
 
     if (next === "completed") {
@@ -37,6 +42,7 @@ export default function RequestsClient() {
       body.finalAmount = amount;
     }
 
+    setBusyIds((current) => ({ ...current, [key]: next }));
     try {
       await apiFetch(`/api/bookings/${encodeURIComponent(id)}/status`, {
         method: "PATCH",
@@ -48,6 +54,12 @@ export default function RequestsClient() {
     } catch (err) {
       toast.error(err.message || "Could not update this request");
       return false;
+    } finally {
+      setBusyIds((current) => {
+        const nextState = { ...current };
+        delete nextState[key];
+        return nextState;
+      });
     }
   }
 
@@ -66,6 +78,7 @@ export default function RequestsClient() {
       requests={data?.bookings ?? []}
       defaultStatus={status}
       loading={isLoading}
+      busyIds={busyIds}
       onStatus={changeStatus}
     />
   );

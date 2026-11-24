@@ -32,7 +32,10 @@ const FILTER_OPTIONS = [
   { value: "completed", label: "Completed" },
 ];
 
-function RequestActions({ request, variant, onStatus }) {
+function RequestActions({ request, variant, onStatus, busyIds }) {
+  const busyAction = busyIds?.[String(request._id)];
+  const isBusy = Boolean(busyAction);
+
   if (request.status === "requested") {
     return (
       <div className="flex flex-wrap items-center justify-end gap-2">
@@ -40,7 +43,11 @@ function RequestActions({ request, variant, onStatus }) {
           type="button"
           size="sm"
           className="min-h-11"
-          onClick={onStatus ? () => onStatus(request._id, "accepted") : undefined}
+          loading={busyAction === "accepted"}
+          disabled={isBusy}
+          onClick={
+            onStatus && !isBusy ? () => onStatus(request._id, "accepted") : undefined
+          }
         >
           Accept
         </Button>
@@ -55,6 +62,8 @@ function RequestActions({ request, variant, onStatus }) {
               type="button"
               size="sm"
               variant="ghost"
+              disabled={isBusy}
+              loading={busyAction === "rejected"}
               className="min-h-11 border border-danger/40 text-danger hover:bg-danger-soft"
             >
               Reject
@@ -71,7 +80,11 @@ function RequestActions({ request, variant, onStatus }) {
         type="button"
         size="sm"
         className="min-h-11"
-        onClick={onStatus ? () => onStatus(request._id, "in-progress") : undefined}
+        loading={busyAction === "in-progress"}
+        disabled={isBusy}
+        onClick={
+          onStatus && !isBusy ? () => onStatus(request._id, "in-progress") : undefined
+        }
       >
         Start Work
       </Button>
@@ -96,7 +109,7 @@ function RequestActions({ request, variant, onStatus }) {
             : undefined
         }
         trigger={
-          <Button type="button" size="sm" className="min-h-11">
+          <Button type="button" size="sm" className="min-h-11" disabled={isBusy}>
             Mark Completed
           </Button>
         }
@@ -159,7 +172,7 @@ function Contact({ request }) {
   );
 }
 
-function RequestCard({ request, onStatus }) {
+function RequestCard({ request, onStatus, busyIds }) {
   return (
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
@@ -202,7 +215,12 @@ function RequestCard({ request, onStatus }) {
       </div>
 
       <div className="flex flex-wrap items-center justify-end gap-2 border-t border-border pt-3">
-        <RequestActions request={request} variant="card" onStatus={onStatus} />
+        <RequestActions
+          request={request}
+          variant="card"
+          onStatus={onStatus}
+          busyIds={busyIds}
+        />
       </div>
     </div>
   );
@@ -213,6 +231,7 @@ export default function RequestsSection({
   defaultStatus = "all",
   loading = false,
   error = false,
+  busyIds = {},
   idPrefix = "request",
   onStatus,
 }) {
@@ -341,12 +360,23 @@ export default function RequestsSection({
             className: "text-right",
             render: (request) => (
               <div className="flex justify-end">
-                <RequestActions request={request} variant="table" onStatus={onStatus} />
+                <RequestActions
+                  request={request}
+                  variant="table"
+                  onStatus={onStatus}
+                  busyIds={busyIds}
+                />
               </div>
             ),
           },
         ]}
-        renderCard={(request) => <RequestCard request={request} onStatus={onStatus} />}
+        renderCard={(request) => (
+          <RequestCard
+            request={request}
+            onStatus={onStatus}
+            busyIds={busyIds}
+          />
+        )}
       />
     </div>
   );

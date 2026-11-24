@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
@@ -15,8 +16,13 @@ export default function ServicesClient() {
       : `/api/admin/services?approvalStatus=${encodeURIComponent(status)}`;
 
   const { data, error, isLoading, reload } = useApiData(path);
+  const [busyIds, setBusyIds] = useState({});
 
   async function decide(id, approvalStatus) {
+    const key = String(id);
+    if (busyIds[key]) return;
+
+    setBusyIds((current) => ({ ...current, [key]: approvalStatus }));
     try {
       await apiFetch(`/api/admin/services/${encodeURIComponent(id)}/approval`, {
         method: "PATCH",
@@ -26,6 +32,12 @@ export default function ServicesClient() {
       reload();
     } catch (err) {
       toast.error(err.message || "Could not update the service");
+    } finally {
+      setBusyIds((current) => {
+        const next = { ...current };
+        delete next[key];
+        return next;
+      });
     }
   }
 
@@ -44,6 +56,7 @@ export default function ServicesClient() {
       services={data?.services ?? []}
       defaultStatus={status}
       loading={isLoading}
+      busyIds={busyIds}
       onDecision={decide}
     />
   );

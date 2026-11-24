@@ -85,7 +85,11 @@ function Availability({ service }) {
   );
 }
 
-function ServiceActions({ service, variant, onDecision }) {
+function ServiceActions({ service, variant, onDecision, busyIds }) {
+  const busyAction = busyIds?.[String(service._id)];
+  const isBusy = Boolean(busyAction);
+  const isApproving = busyAction === "approved";
+  const isRejecting = busyAction === "rejected";
   const canApprove =
     service.approvalStatus === "pending" ||
     service.approvalStatus === "rejected";
@@ -99,13 +103,18 @@ function ServiceActions({ service, variant, onDecision }) {
     <div className="flex flex-wrap items-center justify-end gap-2">
       {canApprove && (
         // Wired by owner in M4/M12 (approval endpoint).
-        <Button type="button" size="sm" 
-        className="min-h-11" 
-        onClick={() => onDecision?.(service._id, "approved")
-
-
-        }
-         >
+        <Button
+          type="button"
+          size="sm"
+          className="min-h-11"
+          loading={isApproving}
+          disabled={isBusy}
+          onClick={
+            onDecision && !isBusy
+              ? () => onDecision(service._id, "approved")
+              : undefined
+          }
+        >
           <Check className="size-3.5" aria-hidden="true" />
           Approve
         </Button>
@@ -115,13 +124,15 @@ function ServiceActions({ service, variant, onDecision }) {
           title="Reject this service?"
           description={`"${service.title}" by ${service.technicianName} will be rejected and hidden from the public listing. The technician can edit and resubmit it.`}
           confirmLabel="Reject service"
-          tone="danger" 
+          tone="danger"
           onConfirm={onDecision ? () => onDecision(service._id, "rejected") : undefined}
           trigger={
             <Button
               type="button"
               size="sm"
               variant="ghost"
+              disabled={isBusy}
+              loading={isRejecting}
               className="min-h-11 border border-danger/40 text-danger hover:bg-danger-soft"
             >
               <X className="size-3.5" aria-hidden="true" />
@@ -134,7 +145,7 @@ function ServiceActions({ service, variant, onDecision }) {
   );
 }
 
-function ServiceCard({ service, onDecision}) {
+function ServiceCard({ service, onDecision, busyIds }) {
   return (
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
@@ -179,7 +190,12 @@ function ServiceCard({ service, onDecision}) {
       </dl>
 
       <div className="flex flex-wrap items-center justify-end border-t border-border pt-3">
-        <ServiceActions service={service} variant="card" onDecision={onDecision} />
+        <ServiceActions
+          service={service}
+          variant="card"
+          onDecision={onDecision}
+          busyIds={busyIds}
+        />
       </div>
     </div>
   );
@@ -190,8 +206,10 @@ export default function ServicesSection({
   defaultStatus = "all",
   loading = false,
   error = false,
+  busyIds = {},
   // Unique id prefix: repeated preview instances must not collide.
-  idPrefix = "admin-service", onDecision
+  idPrefix = "admin-service",
+  onDecision,
 }) {
   if (error) {
     return (
@@ -321,11 +339,22 @@ export default function ServicesSection({
             headerClassName: "text-right",
             className: "text-right",
             render: (service) => (
-            <ServiceActions service={service} variant="table" onDecision={onDecision} />
+              <ServiceActions
+                service={service}
+                variant="table"
+                onDecision={onDecision}
+                busyIds={busyIds}
+              />
             ),
           },
         ]}
-       renderCard={(service) => <ServiceCard service={service} onDecision={onDecision} />}
+        renderCard={(service) => (
+          <ServiceCard
+            service={service}
+            onDecision={onDecision}
+            busyIds={busyIds}
+          />
+        )}
       />
     </div>
   );
